@@ -1,0 +1,13 @@
+Package: gpdIcm
+Type: Package
+Title: Isotonic scale estimation of the GPD
+Version: 0.0.0.9000
+Date: 2014-10-26
+Author: M. Roth
+Maintainer: M. Roth <marsianus@gmail.com>
+Description: Methods for isotonic estimation based on projected gradient and
+    adapted iterative convex minorant algorithm
+License: What Licence is it under ?
+Imports:
+    Rcpp (>= 0.11.1)
+LinkingTo: Rcpp
