@@ -224,12 +224,12 @@ List isotonic_scale_gpd_estimator (NumericVector y, NumericVector xi) {
   
   z_best             = gpd_scale_isotonic_fit(y, isoReg, xi[0]);
   best_shape         = xi[0];
-  log_likelihood[0]  = -z_best["deviance"]/2.0;
+  log_likelihood[0]  = -(float)z_best["deviance"]/2.0;
   max_log_likelihood = log_likelihood[0];
   
   for(int i = 1; i < nxi; i++) {
     z = gpd_scale_isotonic_fit(y, isoReg, xi[i]);
-    log_likelihood[i] = -z["deviance"]/2.0;
+    log_likelihood[i] = -(float)z["deviance"]/2.0;
     if (log_likelihood[i] > max_log_likelihood) {
       z_best = z;
       best_shape = xi[i];
