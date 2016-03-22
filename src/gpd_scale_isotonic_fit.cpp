@@ -53,15 +53,15 @@ NumericVector make_gpd_admissible(NumericVector scale, NumericVector y, double s
   if (shape >= 0) {
     if (z[0] <= 0 ) {
       for (int i = 0; i < nz; i++) {
-        if (z[i] <= 0) z[i] = 0.0000001;
+        if (z[i] <= 0) z[i] = 0.00000001;
       }
     }
   }
   else {
-    double current_status = 0.0000001;
+    double current_status = 0.00000001;
     for (int i = 0; i < nz; i++) {
       if (z[i] < current_status) z[i] = current_status;
-      if (z[i] < -shape * y[i]) z[i] = -shape *y[i];
+      if (z[i] <= -shape * y[i]) z[i] = -shape *y[i]+0.00000001;
       current_status = z[i];
     }
   }
