@@ -11,6 +11,7 @@ randomGpdStepGumbel <- rgpd(n, 0, seq(1, 2, length.out = n), 0)
 load("CETvalues.rda")
 
 newScale <- make_gpd_admissible(scaleTest, yTest, -0.5) 
+profileShape <- seq(-0.5, 0.3, by = 0.01)
 
 test_that("Likelihood calculations", {
   expect_equal(compute_nll_gpd(randomGpdGumbel,  rep(1, n), 0),
@@ -47,4 +48,8 @@ test_that("GPD scale isotonic fit", {
   expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.1), "./outputTests/scaleFitFrechet.rds")
   expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.0), "./outputTests/scaleFitGumbel.rds")
   expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest, -0.1), "./outputTests/scaleFitWeibull.rds")
+})
+
+test_that("Profile likelihood estimation", {
+  expect_equal_to_reference(isotonic_scale_gpd_estimator(yTest, profileShape), "./outputTests/ProfileLikelihoodMaximizer.rds")
 })
