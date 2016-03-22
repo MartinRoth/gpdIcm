@@ -53,7 +53,7 @@ NumericVector make_gpd_admissible(NumericVector scale, NumericVector y, double s
   if (shape >= 0) {
     if (z[0] <= 0 ) {
       for (int i = 0; i < nz; i++) {
-        if (z[i] <= 0) z[i] = 0.00000001;
+        if (z[i] <= 0) z[i] = 1e-8;
       }
     }
   }
@@ -61,7 +61,7 @@ NumericVector make_gpd_admissible(NumericVector scale, NumericVector y, double s
     double current_status = 0.00000001;
     for (int i = 0; i < nz; i++) {
       if (z[i] < current_status) z[i] = current_status;
-      if (z[i] <= -shape * y[i]) z[i] = -shape *y[i]+0.00000001;
+      if (z[i] <= -shape * y[i]) z[i] = -shape *y[i]+1e-8;
       current_status = z[i];
     }
   }
@@ -96,6 +96,8 @@ NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, Nume
 //[[Rcpp::export]]
 List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape) {
 
+  start = make_gpd_admissible(start, y, shape);
+  
   int max_repetitions = 50000000;
   
   double        value     = compute_nll_gpd(y, start, shape);
