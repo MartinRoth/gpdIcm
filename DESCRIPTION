@@ -11,4 +11,7 @@ License: What Licence is it under ?
 Imports: 
     Rcpp (>= 0.11.1)
 LinkingTo: Rcpp
-Suggests: testthat
+Suggests: testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
