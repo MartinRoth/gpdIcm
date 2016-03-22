@@ -43,6 +43,21 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// search_line_icm_gpd
+NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, NumericVector tmp_scale, double shape, double value);
+RcppExport SEXP gpdIcm_search_line_icm_gpd(SEXP ySEXP, SEXP old_scaleSEXP, SEXP tmp_scaleSEXP, SEXP shapeSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type old_scale(old_scaleSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tmp_scale(tmp_scaleSEXP);
+    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(search_line_icm_gpd(y, old_scale, tmp_scale, shape, value));
+    return __result;
+END_RCPP
+}
 // gpd_scale_isotonic_fit
 List gpd_scale_isotonic_fit(NumericVector y, NumericVector start, double shape);
 RcppExport SEXP gpdIcm_gpd_scale_isotonic_fit(SEXP ySEXP, SEXP startSEXP, SEXP shapeSEXP) {

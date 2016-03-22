@@ -69,6 +69,7 @@ NumericVector make_gpd_admissible(NumericVector scale, NumericVector y, double s
 }
 
 // search_line_icm_gpd
+//[[Rcpp::export]]
 NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, NumericVector tmp_scale,
     double shape, double value) {
   

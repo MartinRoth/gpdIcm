@@ -41,3 +41,10 @@ test_that("Only admissable scale values", {
                c(0.1, 0.1, 0.2)+1e-8)
   expect_equal_to_reference(make_gpd_admissible(scaleTest, yTest, -0.5), "./outputTests/AdmissableScale.rds")
 })
+
+
+test_that("GPD scale isotonic fit", {
+  expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.1), "./outputTests/scaleFitFrechet.rds")
+  expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.0), "./outputTests/scaleFitGumbel.rds")
+  expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest, -0.1), "./outputTests/scaleFitWeibull.rds")
+})
