@@ -8,6 +8,10 @@ Maintainer: M. Roth <marsianus@gmail.com>
 Description: Methods for isotonic estimation based on projected gradient and
     adapted iterative convex minorant algorithm
 License: What Licence is it under ?
-Imports:
+Imports: 
     Rcpp (>= 0.11.1)
 LinkingTo: Rcpp
+Suggests: testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

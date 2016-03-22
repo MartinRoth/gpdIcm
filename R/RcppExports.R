@@ -17,6 +17,10 @@ make_gpd_admissible <- function(scale, y, shape) {
     .Call('gpdIcm_make_gpd_admissible', PACKAGE = 'gpdIcm', scale, y, shape)
 }
 
+search_line_icm_gpd <- function(y, old_scale, tmp_scale, shape, value) {
+    .Call('gpdIcm_search_line_icm_gpd', PACKAGE = 'gpdIcm', y, old_scale, tmp_scale, shape, value)
+}
+
 #' Isotonic estimation (using an adapted version of the ICM algorithm)
 #'
 #' @return isotonic scale parameter estimate and deviance

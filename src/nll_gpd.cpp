@@ -24,8 +24,8 @@ double compute_nll_gpd(NumericVector y, NumericVector scale, double shape) {
   
   double nll = 0.0;
   
-  //if (abs(shape) < 0.00000001) {
-  if (shape == 0) {
+  if (abs(shape) < 1e-06) {
+  //if (shape == 0) {
     for (int i = 0; i < ny; i++) {
       nll += log(scale[i]) + y[i] / scale[i];
     }
