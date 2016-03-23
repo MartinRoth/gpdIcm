@@ -37,8 +37,8 @@ gpd_projected_gradient_next_step <- function(y, scale, shape) {
 #' @note up to now only for positive shape parameters
 #'
 #' @return isotonic scale parameter estimate and deviance
-gpd_isotonic_scale_projected_gradient <- function(y, scale, shape, max_iterations) {
-    .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape, max_iterations)
+gpd_isotonic_scale_projected_gradient <- function(y, scale, shape) {
+    .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape)
 }
 
 #' Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter 

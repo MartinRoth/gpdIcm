@@ -4,7 +4,7 @@
 \alias{gpd_isotonic_scale_projected_gradient}
 \title{Isotonic estimation (using a projected grdient method)}
 \usage{
-gpd_isotonic_scale_projected_gradient(y, scale, shape, max_iterations)
+gpd_isotonic_scale_projected_gradient(y, scale, shape)
 }
 \value{
 isotonic scale parameter estimate and deviance

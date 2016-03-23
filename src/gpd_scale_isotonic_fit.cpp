@@ -89,8 +89,50 @@ NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, Nume
   return z;  
 }
 
+double compute_scalar_product (NumericVector a, NumericVector b) {
+  int n = a.length();
+  double scalar = 0;
+  for (int i=0; i<n; i++) {
+      scalar = scalar + (a[i] * b[i]);
+  }
+  return scalar;
+}
 
+NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shape) {
+  int           ny = y.length();
+  NumericVector gradient(ny);
+  
+  for (int i = 0; i < ny; i++) {
+    gradient[i] = compute_pd1_scale_nll_gpd(y[i], scale[i], shape);
+  }
+   return gradient;
+}
 
+//´ Goldstein-Armijo search for ICM method
+//[Rcpp::export]
+NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
+  double b = 0.5;
+  double s = 1.0;
+  double m = 1e-4;
+  int    e = 0;
+  int    maxExponent = 35;
+  double a = s;
+  
+  NumericVector gradient = ComputeGradient(y, oldScale, shape); 
+  
+  double nllOld = compute_nll_gpd(y, oldScale, shape);
+  NumericVector direction = compute_next_icm_gpd(y, oldScale, shape) - oldScale;
+  NumericVector newScale = make_gpd_admissible(oldScale + a * direction, y, shape);
+  double nllNew = compute_nll_gpd(y, newScale, shape);
+  double scalar = compute_scalar_product(gradient, oldScale - newScale);
+  while ( (e < maxExponent) && (nllOld - nllNew < m * scalar)) {
+    a *= b;
+    newScale = make_gpd_admissible(oldScale + a * direction, y, shape);
+    nllNew = compute_nll_gpd(y, newScale, shape);
+    scalar = compute_scalar_product(gradient, oldScale - newScale);
+  }
+  return newScale;
+}
 
 // gpd_scale_isotonic_fit
 //' Isotonic estimation (using an adapted version of the ICM algorithm)
@@ -101,11 +143,10 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape)
 
   start = make_gpd_admissible(start, y, shape);
   
-  int max_repetitions = 50000000;
+  int max_repetitions = 5e+7;
   
   double        value     = compute_nll_gpd(y, start, shape);
-  NumericVector tmp_scale = compute_next_icm_gpd(y, start, shape);
-  NumericVector new_scale = search_line_icm_gpd(y, start, tmp_scale, shape, value);
+  NumericVector new_scale = lineSearchICM(start, y, shape);
   double        new_value = compute_nll_gpd(y, new_scale, shape);
   
   
@@ -113,22 +154,12 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape)
   while (value - new_value > 1e-15 && i < max_repetitions) {
     i++;
     value     = new_value;
-    tmp_scale = compute_next_icm_gpd(y, new_scale, shape);
-    new_scale = search_line_icm_gpd(y, new_scale, tmp_scale, shape, value);
+    new_scale = lineSearchICM(new_scale, y, shape); 
     new_value = compute_nll_gpd(y, new_scale, shape);
   }
   
   double nll = compute_nll_gpd(y, new_scale, shape);
   return List::create(Named("fitted.values") = new_scale, Named("deviance") = 2 * nll);
-}
-
-double compute_scalar_product (NumericVector a, NumericVector b) {
-  int n = a.length();
-  double scalar = 0;
-  for (int i=0; i<n; i++) {
-      scalar = scalar + (a[i] * b[i]);
-  }
-  return scalar;
 }
 
 // gpd_Goldstein_Armijo_search
@@ -155,7 +186,7 @@ NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale,
   
   ll = compute_nll_gpd(y, projection, shape);
   
-  while ((ll_old - ll < 1e-6 * scalar) && exponent < max_exponent) {
+  while ((ll_old - ll < 1e-4 * scalar) && exponent < max_exponent) {
     exponent  += 1;
     yy         = scale - pow(beta, exponent) * initial_step * gradient;
     projection = make_gpd_admissible(compute_convex_minorant_of_cumsum(xx, yy), y, shape);
@@ -191,13 +222,14 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //'
 //' @return isotonic scale parameter estimate and deviance
 //[[Rcpp::export]]
-List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape, int max_iterations) {
+List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape) {
   scale = make_gpd_admissible(scale, y, shape);
   
   NumericVector scale_old = scale;
   double        value     = compute_nll_gpd(y, scale, shape);
   double        new_value = compute_nll_gpd(y, scale, shape);
   int i = 0;
+  int max_iterations = 5e+7;
   do {
     value     = new_value;
     i        += 1;
