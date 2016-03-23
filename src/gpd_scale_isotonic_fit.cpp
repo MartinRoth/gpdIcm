@@ -89,8 +89,50 @@ NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, Nume
   return z;  
 }
 
+double compute_scalar_product (NumericVector a, NumericVector b) {
+  int n = a.length();
+  double scalar = 0;
+  for (int i=0; i<n; i++) {
+      scalar = scalar + (a[i] * b[i]);
+  }
+  return scalar;
+}
 
+NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shape) {
+  int           ny = y.length();
+  NumericVector gradient(ny);
+  
+  for (int i = 0; i < ny; i++) {
+    gradient[i] = compute_pd1_scale_nll_gpd(y[i], scale[i], shape);
+  }
+   return gradient;
+}
 
+//´ Goldstein-Armijo search for ICM method
+//[Rcpp::export]
+NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
+  double b = 0.5;
+  double s = 1.0;
+  double m = 1e-4;
+  int    e = 0;
+  int    maxExponent = 35;
+  double a = s;
+  
+  NumericVector gradient = ComputeGradient(y, oldScale, shape); 
+  
+  double nllOld = compute_nll_gpd(y, oldScale, shape);
+  NumericVector direction = compute_next_icm_gpd(y, oldScale, shape) - oldScale;
+  NumericVector newScale = make_gpd_admissible(oldScale + a * direction, y, shape);
+  double nllNew = compute_nll_gpd(y, newScale, shape);
+  double scalar = compute_scalar_product(gradient, oldScale - newScale);
+  while ( (e < maxExponent) && (nllOld - nllNew < m * scalar)) {
+    a *= b;
+    newScale = make_gpd_admissible(oldScale + a * direction, y, shape);
+    nllNew = compute_nll_gpd(y, newScale, shape);
+    scalar = compute_scalar_product(gradient, oldScale - newScale);
+  }
+  return newScale;
+}
 
 // gpd_scale_isotonic_fit
 //' Isotonic estimation (using an adapted version of the ICM algorithm)
@@ -120,15 +162,6 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape)
   
   double nll = compute_nll_gpd(y, new_scale, shape);
   return List::create(Named("fitted.values") = new_scale, Named("deviance") = 2 * nll);
-}
-
-double compute_scalar_product (NumericVector a, NumericVector b) {
-  int n = a.length();
-  double scalar = 0;
-  for (int i=0; i<n; i++) {
-      scalar = scalar + (a[i] * b[i]);
-  }
-  return scalar;
 }
 
 // gpd_Goldstein_Armijo_search
