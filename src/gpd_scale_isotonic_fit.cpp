@@ -90,6 +90,8 @@ NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, Nume
 }
 
 
+
+
 // gpd_scale_isotonic_fit
 //' Isotonic estimation (using an adapted version of the ICM algorithm)
 //'
@@ -108,7 +110,7 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape)
   
   
   int i = 0;
-  while (value - new_value > 0.0000000000000001 && i < max_repetitions) {
+  while (value - new_value > 1e-15 && i < max_repetitions) {
     i++;
     value     = new_value;
     tmp_scale = compute_next_icm_gpd(y, new_scale, shape);
@@ -147,16 +149,16 @@ NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale,
     exponent += 1;
     yy = scale - pow(beta, exponent) * initial_step * gradient;
     projection = compute_convex_minorant_of_cumsum(xx, yy);
-  } while (min(projection) < 0);
+  } while (min(projection) < 0); // use make gpd admissible instead
   
   double scalar = compute_scalar_product(gradient, scale - projection);
   
   ll = compute_nll_gpd(y, projection, shape);
   
-  while ((ll_old - ll < 0.0001 * scalar) && exponent < max_exponent) {
+  while ((ll_old - ll < 1e-6 * scalar) && exponent < max_exponent) {
     exponent  += 1;
     yy         = scale - pow(beta, exponent) * initial_step * gradient;
-    projection = compute_convex_minorant_of_cumsum(xx, yy);
+    projection = make_gpd_admissible(compute_convex_minorant_of_cumsum(xx, yy), y, shape);
     scalar     = compute_scalar_product(gradient, scale - projection);
     ll         = compute_nll_gpd(y, projection, shape);
   }
@@ -190,6 +192,8 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //' @return isotonic scale parameter estimate and deviance
 //[[Rcpp::export]]
 List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape, int max_iterations) {
+  scale = make_gpd_admissible(scale, y, shape);
+  
   NumericVector scale_old = scale;
   double        value     = compute_nll_gpd(y, scale, shape);
   double        new_value = compute_nll_gpd(y, scale, shape);
@@ -201,7 +205,7 @@ List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale
     scale     = gpd_projected_gradient_next_step(y, scale_old, shape);
     new_value = compute_nll_gpd(y, scale, shape);
   //} while (is_true(any(scale != scale_old)) && i < max_iterations);
-  } while (value - new_value > 0.0000000000000001 && i < max_iterations);
+  } while (value - new_value > 1e-15 && i < max_iterations);
   
   double nll = compute_nll_gpd(y, scale, shape);
   return List::create(Named("fitted.values") = scale, Named("deviance") = 2 * nll);
