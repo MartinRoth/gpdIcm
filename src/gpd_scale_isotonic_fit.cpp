@@ -143,11 +143,10 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape)
 
   start = make_gpd_admissible(start, y, shape);
   
-  int max_repetitions = 50000000;
+  int max_repetitions = 5e+7;
   
   double        value     = compute_nll_gpd(y, start, shape);
-  NumericVector tmp_scale = compute_next_icm_gpd(y, start, shape);
-  NumericVector new_scale = search_line_icm_gpd(y, start, tmp_scale, shape, value);
+  NumericVector new_scale = lineSearchICM(start, y, shape);
   double        new_value = compute_nll_gpd(y, new_scale, shape);
   
   
@@ -155,8 +154,7 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape)
   while (value - new_value > 1e-15 && i < max_repetitions) {
     i++;
     value     = new_value;
-    tmp_scale = compute_next_icm_gpd(y, new_scale, shape);
-    new_scale = search_line_icm_gpd(y, new_scale, tmp_scale, shape, value);
+    new_scale = lineSearchICM(new_scale, y, shape); 
     new_value = compute_nll_gpd(y, new_scale, shape);
   }
   
@@ -188,7 +186,7 @@ NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale,
   
   ll = compute_nll_gpd(y, projection, shape);
   
-  while ((ll_old - ll < 1e-6 * scalar) && exponent < max_exponent) {
+  while ((ll_old - ll < 1e-4 * scalar) && exponent < max_exponent) {
     exponent  += 1;
     yy         = scale - pow(beta, exponent) * initial_step * gradient;
     projection = make_gpd_admissible(compute_convex_minorant_of_cumsum(xx, yy), y, shape);
@@ -224,13 +222,14 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //'
 //' @return isotonic scale parameter estimate and deviance
 //[[Rcpp::export]]
-List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape, int max_iterations) {
+List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape) {
   scale = make_gpd_admissible(scale, y, shape);
   
   NumericVector scale_old = scale;
   double        value     = compute_nll_gpd(y, scale, shape);
   double        new_value = compute_nll_gpd(y, scale, shape);
   int i = 0;
+  int max_iterations = 5e+7;
   do {
     value     = new_value;
     i        += 1;

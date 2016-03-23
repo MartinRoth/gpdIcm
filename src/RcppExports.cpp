@@ -85,16 +85,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // gpd_isotonic_scale_projected_gradient
-List gpd_isotonic_scale_projected_gradient(NumericVector y, NumericVector scale, double shape, int max_iterations);
-RcppExport SEXP gpdIcm_gpd_isotonic_scale_projected_gradient(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP, SEXP max_iterationsSEXP) {
+List gpd_isotonic_scale_projected_gradient(NumericVector y, NumericVector scale, double shape);
+RcppExport SEXP gpdIcm_gpd_isotonic_scale_projected_gradient(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
     Rcpp::traits::input_parameter< NumericVector >::type scale(scaleSEXP);
     Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
-    Rcpp::traits::input_parameter< int >::type max_iterations(max_iterationsSEXP);
-    __result = Rcpp::wrap(gpd_isotonic_scale_projected_gradient(y, scale, shape, max_iterations));
+    __result = Rcpp::wrap(gpd_isotonic_scale_projected_gradient(y, scale, shape));
     return __result;
 END_RCPP
 }
