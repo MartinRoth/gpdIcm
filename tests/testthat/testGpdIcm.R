@@ -48,6 +48,9 @@ test_that("GPD scale isotonic fit", {
   expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.1), "./outputTests/scaleFitFrechet.rds")
   expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.0), "./outputTests/scaleFitGumbel.rds")
   expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest, -0.1), "./outputTests/scaleFitWeibull.rds")
+  expect_equal_to_reference(gpd_isotonic_scale_projected_gradient(yTest, scaleTest,  0.1), "./outputTests/scaleFitFrechet.rds")
+  expect_equal_to_reference(gpd_isotonic_scale_projected_gradient(yTest, scaleTest,  0.0), "./outputTests/scaleFitGumbel.rds")
+  expect_equal_to_reference(gpd_isotonic_scale_projected_gradient(yTest, scaleTest, -0.1), "./outputTests/scaleFitWeibull.rds")
 })
 
 test_that("Profile likelihood estimation", {
