@@ -87,7 +87,3 @@ convexMinorant <- function(x, y) {
     .Call('gpdIcm_convexMinorant', PACKAGE = 'gpdIcm', x, y)
 }
 
-rcpp_hello_world <- function() {
-    .Call('gpdIcm_rcpp_hello_world', PACKAGE = 'gpdIcm')
-}
-
