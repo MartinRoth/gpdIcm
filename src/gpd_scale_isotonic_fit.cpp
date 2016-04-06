@@ -12,7 +12,7 @@ using namespace Rcpp;
 
 // For more on using Rcpp click the Help button on the editor toolbar
 
-// [[Rcpp::export]]
+//// [[Rcpp::export]]
 NumericVector compute_convex_minorant_of_cumsum(NumericVector x, NumericVector y) {
   vector<double> xx;
   vector<double> yy;
@@ -29,7 +29,7 @@ NumericVector compute_convex_minorant_of_cumsum(NumericVector x, NumericVector y
   return newBeta;
 }
 
-// [[Rcpp::export]]
+//// [[Rcpp::export]]
 NumericVector compute_next_icm_gpd(NumericVector y, NumericVector scale, double shape) {
   int ny = y.length();
   NumericVector xx(ny, 1.0); 
@@ -69,26 +69,26 @@ NumericVector make_gpd_admissible(NumericVector scale, NumericVector y, double s
   return z;
 }
 
-// search_line_icm_gpd
-//[[Rcpp::export]]
-NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, NumericVector tmp_scale,
-    double shape, double value) {
-  
-  double        t        = 1.0;
-  NumericVector z        = old_scale + t * (tmp_scale - old_scale); 
-  z                      = make_gpd_admissible(z, y, shape);
-  double        newValue = compute_nll_gpd(y, z, shape);
-
-  int i = 0;
-  while (newValue > value && i < 30) {
-    i++;
-    t /= 2;
-    z = old_scale + t * (tmp_scale - old_scale);
-    z = make_gpd_admissible(z, y, shape);
-    newValue = compute_nll_gpd(y, z, shape);
-  }
-  return z;  
-}
+//// search_line_icm_gpd
+////[[Rcpp::export]]
+//NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, NumericVector tmp_scale,
+//    double shape, double value) {
+//  
+//  double        t        = 1.0;
+//  NumericVector z        = old_scale + t * (tmp_scale - old_scale); 
+//  z                      = make_gpd_admissible(z, y, shape);
+//  double        newValue = compute_nll_gpd(y, z, shape);
+//
+//  int i = 0;
+//  while (newValue > value && i < 30) {
+//    i++;
+//    t /= 2;
+//    z = old_scale + t * (tmp_scale - old_scale);
+//    z = make_gpd_admissible(z, y, shape);
+//    newValue = compute_nll_gpd(y, z, shape);
+//  }
+//  return z;  
+//}
 
 double compute_scalar_product (NumericVector a, NumericVector b) {
   int n = a.length();
