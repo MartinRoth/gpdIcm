@@ -206,7 +206,7 @@ NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale,
 }
 
 // gpd_projected_gradient_next_step
-//[[Rcpp::export]]
+////[[Rcpp::export]]
 NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector scale, double shape) {
   
   int           ny = y.length();
