@@ -31,19 +31,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// gpd_projected_gradient_next_step
-NumericVector gpd_projected_gradient_next_step(NumericVector y, NumericVector scale, double shape);
-RcppExport SEXP gpdIcm_gpd_projected_gradient_next_step(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type scale(scaleSEXP);
-    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
-    __result = Rcpp::wrap(gpd_projected_gradient_next_step(y, scale, shape));
-    return __result;
-END_RCPP
-}
 // gpd_isotonic_scale_projected_gradient
 List gpd_isotonic_scale_projected_gradient(NumericVector y, NumericVector scale, double shape);
 RcppExport SEXP gpdIcm_gpd_isotonic_scale_projected_gradient(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP) {
@@ -92,18 +79,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
     Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
     __result = Rcpp::wrap(compute_pd1_scale_nll_gpd(y, scale, shape));
-    return __result;
-END_RCPP
-}
-// convexMinorant
-NumericVector convexMinorant(NumericVector x, NumericVector y);
-RcppExport SEXP gpdIcm_convexMinorant(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    __result = Rcpp::wrap(convexMinorant(x, y));
     return __result;
 END_RCPP
 }

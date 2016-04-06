@@ -22,10 +22,6 @@ gpd_scale_isotonic_fit <- function(y, start, shape) {
     .Call('gpdIcm_gpd_scale_isotonic_fit', PACKAGE = 'gpdIcm', y, start, shape)
 }
 
-gpd_projected_gradient_next_step <- function(y, scale, shape) {
-    .Call('gpdIcm_gpd_projected_gradient_next_step', PACKAGE = 'gpdIcm', y, scale, shape)
-}
-
 #' Isotonic estimation (using a projected grdient method)
 #'
 #' @note up to now only for positive shape parameters
@@ -66,12 +62,5 @@ compute_nll_gpd <- function(y, scale, shape) {
 #' @inheritParams compute_nll_gpd
 compute_pd1_scale_nll_gpd <- function(y, scale, shape) {
     .Call('gpdIcm_compute_pd1_scale_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
-}
-
-#' Computes the convex minorant of a polygon.
-#' @param x,y the coordinates of the polygon
-#' @return vector of the y-coordinates of the convex minorant
-convexMinorant <- function(x, y) {
-    .Call('gpdIcm_convexMinorant', PACKAGE = 'gpdIcm', x, y)
 }
 
