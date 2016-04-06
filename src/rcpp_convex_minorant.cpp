@@ -30,7 +30,6 @@ NumericVector compute_slopes(NumericVector x, NumericVector y) {
 //' Computes the convex minorant of a polygon.
 //' @param x,y the coordinates of the polygon
 //' @return vector of the y-coordinates of the convex minorant
-// [[Rcpp::export]]
 NumericVector convexMinorant(NumericVector x, NumericVector y) {
   
   int ny = y.length();
