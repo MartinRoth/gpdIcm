@@ -6,6 +6,13 @@
 \usage{
 gpd_scale_isotonic_fit(y, start, shape)
 }
+\arguments{
+\item{y}{numeric vector of the data}
+
+\item{start}{Numeric vector of the initial scale parameters (will be forced to be admissible)}
+
+\item{shape}{double}
+}
 \value{
 isotonic scale parameter estimate and deviance
 }

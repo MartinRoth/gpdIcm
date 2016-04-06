@@ -98,14 +98,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // isotonic_scale_gpd_estimator
-List isotonic_scale_gpd_estimator(NumericVector y, NumericVector xi);
-RcppExport SEXP gpdIcm_isotonic_scale_gpd_estimator(SEXP ySEXP, SEXP xiSEXP) {
+List isotonic_scale_gpd_estimator(NumericVector y, NumericVector shape);
+RcppExport SEXP gpdIcm_isotonic_scale_gpd_estimator(SEXP ySEXP, SEXP shapeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type xi(xiSEXP);
-    __result = Rcpp::wrap(isotonic_scale_gpd_estimator(y, xi));
+    Rcpp::traits::input_parameter< NumericVector >::type shape(shapeSEXP);
+    __result = Rcpp::wrap(isotonic_scale_gpd_estimator(y, shape));
     return __result;
 END_RCPP
 }

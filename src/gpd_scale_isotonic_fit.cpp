@@ -44,6 +44,7 @@ NumericVector compute_next_icm_gpd(NumericVector y, NumericVector scale, double 
 //' Ensure admissibility of the GPD scale parameter
 //' up to now only for positive shape parameters
 //'
+//' @inheritParams compute_nll_gpd
 //' @return isotonic scale parameter that does not violate the GPD constraint
 //[[Rcpp::export]]
 NumericVector make_gpd_admissible(NumericVector scale, NumericVector y, double shape) {
@@ -138,6 +139,11 @@ NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double sha
 //' Isotonic estimation (using an adapted version of the ICM algorithm)
 //'
 //' @return isotonic scale parameter estimate and deviance
+//' @inheritParams compute_nll_gpd
+//' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
+//' @useDynLib gpdIcm
+//' @importFrom Rcpp evalCpp
+//' @export
 //[[Rcpp::export]]
 List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape) {
 
@@ -220,6 +226,7 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //'
 //' @note up to now only for positive shape parameters
 //'
+//' @inheritParams compute_nll_gpd
 //' @return isotonic scale parameter estimate and deviance
 //[[Rcpp::export]]
 List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape) {
@@ -247,10 +254,13 @@ List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale
 //' Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter 
 //'
 //'
+//' @inheritParams compute_nll_gpd
 //' @return isotonic scale parameter estimate and deviance
+//' @export
 //[[Rcpp::export]]
-List isotonic_scale_gpd_estimator (NumericVector y, NumericVector xi) {
+List isotonic_scale_gpd_estimator (NumericVector y, NumericVector shape) {
   
+  NumericVector xi = shape;
   int           ny = y.length();
   int           nxi = xi.length();
   NumericVector xx(ny, 1.0);

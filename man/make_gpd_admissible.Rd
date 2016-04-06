@@ -7,6 +7,13 @@ up to now only for positive shape parameters}
 \usage{
 make_gpd_admissible(scale, y, shape)
 }
+\arguments{
+\item{scale}{numeric vector of the scape parameters}
+
+\item{y}{numeric vector of the data}
+
+\item{shape}{double}
+}
 \value{
 isotonic scale parameter that does not violate the GPD constraint
 }

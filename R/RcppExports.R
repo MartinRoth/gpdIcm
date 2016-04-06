@@ -12,6 +12,7 @@ compute_next_icm_gpd <- function(y, scale, shape) {
 #' Ensure admissibility of the GPD scale parameter
 #' up to now only for positive shape parameters
 #'
+#' @inheritParams compute_nll_gpd
 #' @return isotonic scale parameter that does not violate the GPD constraint
 make_gpd_admissible <- function(scale, y, shape) {
     .Call('gpdIcm_make_gpd_admissible', PACKAGE = 'gpdIcm', scale, y, shape)
@@ -24,6 +25,11 @@ search_line_icm_gpd <- function(y, old_scale, tmp_scale, shape, value) {
 #' Isotonic estimation (using an adapted version of the ICM algorithm)
 #'
 #' @return isotonic scale parameter estimate and deviance
+#' @inheritParams compute_nll_gpd
+#' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
+#' @useDynLib gpdIcm
+#' @importFrom Rcpp evalCpp
+#' @export
 gpd_scale_isotonic_fit <- function(y, start, shape) {
     .Call('gpdIcm_gpd_scale_isotonic_fit', PACKAGE = 'gpdIcm', y, start, shape)
 }
@@ -36,6 +42,7 @@ gpd_projected_gradient_next_step <- function(y, scale, shape) {
 #'
 #' @note up to now only for positive shape parameters
 #'
+#' @inheritParams compute_nll_gpd
 #' @return isotonic scale parameter estimate and deviance
 gpd_isotonic_scale_projected_gradient <- function(y, scale, shape) {
     .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape)
@@ -44,9 +51,11 @@ gpd_isotonic_scale_projected_gradient <- function(y, scale, shape) {
 #' Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter 
 #'
 #'
+#' @inheritParams compute_nll_gpd
 #' @return isotonic scale parameter estimate and deviance
-isotonic_scale_gpd_estimator <- function(y, xi) {
-    .Call('gpdIcm_isotonic_scale_gpd_estimator', PACKAGE = 'gpdIcm', y, xi)
+#' @export
+isotonic_scale_gpd_estimator <- function(y, shape) {
+    .Call('gpdIcm_isotonic_scale_gpd_estimator', PACKAGE = 'gpdIcm', y, shape)
 }
 
 #' Computes the negative log likelihood for the GPD
@@ -54,6 +63,9 @@ isotonic_scale_gpd_estimator <- function(y, xi) {
 #' No threshold parameter
 #' 
 #' scale has same length as y and shape has length 1
+#' @param y numeric vector of the data
+#' @param scale numeric vector of the scape parameters
+#' @param shape double 
 compute_nll_gpd <- function(y, scale, shape) {
     .Call('gpdIcm_compute_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
 }
@@ -63,6 +75,7 @@ compute_nll_gpd <- function(y, scale, shape) {
 #' No threshold parameter
 #' 
 #' scale has same length as y and shape has length 1
+#' @inheritParams compute_nll_gpd
 compute_pd1_scale_nll_gpd <- function(y, scale, shape) {
     .Call('gpdIcm_compute_pd1_scale_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
 }

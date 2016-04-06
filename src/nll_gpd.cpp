@@ -15,6 +15,9 @@ using namespace Rcpp;
 //' No threshold parameter
 //' 
 //' scale has same length as y and shape has length 1
+//' @param y numeric vector of the data
+//' @param scale numeric vector of the scape parameters
+//' @param shape double 
 // [[Rcpp::export]]
 double compute_nll_gpd(NumericVector y, NumericVector scale, double shape) {
   int ny      = y.length();
@@ -44,6 +47,7 @@ double compute_nll_gpd(NumericVector y, NumericVector scale, double shape) {
 //' No threshold parameter
 //' 
 //' scale has same length as y and shape has length 1
+//' @inheritParams compute_nll_gpd
 // [[Rcpp::export]]
 double compute_pd1_scale_nll_gpd(double y, double scale, double shape) {
   return ( 1 / scale - (1 + shape) * y / (pow(scale, 2) * (1 + shape * y / scale)));

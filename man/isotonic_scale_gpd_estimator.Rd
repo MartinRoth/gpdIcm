@@ -4,7 +4,12 @@
 \alias{isotonic_scale_gpd_estimator}
 \title{Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter}
 \usage{
-isotonic_scale_gpd_estimator(y, xi)
+isotonic_scale_gpd_estimator(y, shape)
+}
+\arguments{
+\item{y}{numeric vector of the data}
+
+\item{shape}{double}
 }
 \value{
 isotonic scale parameter estimate and deviance

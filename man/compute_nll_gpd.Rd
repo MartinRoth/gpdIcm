@@ -6,6 +6,13 @@
 \usage{
 compute_nll_gpd(y, scale, shape)
 }
+\arguments{
+\item{y}{numeric vector of the data}
+
+\item{scale}{numeric vector of the scape parameters}
+
+\item{shape}{double}
+}
 \description{
 No threshold parameter
 }

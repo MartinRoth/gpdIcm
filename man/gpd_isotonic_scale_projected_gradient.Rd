@@ -6,6 +6,13 @@
 \usage{
 gpd_isotonic_scale_projected_gradient(y, scale, shape)
 }
+\arguments{
+\item{y}{numeric vector of the data}
+
+\item{scale}{numeric vector of the scape parameters}
+
+\item{shape}{double}
+}
 \value{
 isotonic scale parameter estimate and deviance
 }

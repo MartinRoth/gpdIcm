@@ -13,6 +13,7 @@ load("CETvalues.rda")
 newScale <- make_gpd_admissible(scaleTest, yTest, -0.5) 
 profileShape <- seq(-0.5, 0.3, by = 0.01)
 
+context("Likelihood calculations")
 test_that("Likelihood calculations", {
   expect_equal(compute_nll_gpd(randomGpdGumbel,  rep(1, n), 0),
                -sum(log(dgpd(randomGpdGumbel, 0, 1, 0))))
@@ -24,6 +25,7 @@ test_that("Likelihood calculations", {
                -sum(log(dgpd(yTest, 0, scaleTest, -0.3))))
 })
 
+context("Partial derivatives")
 test_that("Partial derivative", {
   expect_equal(compute_pd1_scale_nll_gpd(randomGpdGumbel[1], 1, 0),
                1 - randomGpdGumbel[1] / 1)
@@ -33,6 +35,7 @@ test_that("Partial derivative", {
                1 - (1 - 0.3) * randomGpdWeibull[1] / (1 - 0.3 * randomGpdWeibull[1]))
 })
 
+context("Ensure admissibility")
 test_that("Only admissable scale values", {
   expect_equal(make_gpd_admissible(-1, 1, 0), 1e-8)
   expect_equal(make_gpd_admissible(-1, 1, 0.1), 1e-8)
@@ -43,6 +46,7 @@ test_that("Only admissable scale values", {
   expect_equal_to_reference(make_gpd_admissible(scaleTest, yTest, -0.5), "./outputTests/AdmissableScale.rds")
 })
 
+context("Isotonic fits")
 
 test_that("GPD scale isotonic fit", {
   expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.1), "./outputTests/scaleFitFrechet.rds")
