@@ -127,6 +127,7 @@ NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double sha
   double nllNew = compute_nll_gpd(y, newScale, shape);
   double scalar = compute_scalar_product(gradient, oldScale - newScale);
   while ( (e < maxExponent) && (nllOld - nllNew < m * scalar)) {
+    e += 1;
     a *= b;
     newScale = make_gpd_admissible(oldScale + a * direction, y, shape);
     nllNew = compute_nll_gpd(y, newScale, shape);
