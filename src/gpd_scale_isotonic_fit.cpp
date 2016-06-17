@@ -228,6 +228,7 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //'
 //' @inheritParams compute_nll_gpd
 //' @return isotonic scale parameter estimate and deviance
+//' @export
 //[[Rcpp::export]]
 List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape) {
   scale = make_gpd_admissible(scale, y, shape);
