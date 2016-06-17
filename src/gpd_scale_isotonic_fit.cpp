@@ -127,6 +127,7 @@ NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double sha
   double nllNew = compute_nll_gpd(y, newScale, shape);
   double scalar = compute_scalar_product(gradient, oldScale - newScale);
   while ( (e < maxExponent) && (nllOld - nllNew < m * scalar)) {
+    e += 1;
     a *= b;
     newScale = make_gpd_admissible(oldScale + a * direction, y, shape);
     nllNew = compute_nll_gpd(y, newScale, shape);
@@ -227,6 +228,7 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //'
 //' @inheritParams compute_nll_gpd
 //' @return isotonic scale parameter estimate and deviance
+//' @export
 //[[Rcpp::export]]
 List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape) {
   scale = make_gpd_admissible(scale, y, shape);

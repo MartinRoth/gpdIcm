@@ -28,6 +28,7 @@ gpd_scale_isotonic_fit <- function(y, start, shape) {
 #'
 #' @inheritParams compute_nll_gpd
 #' @return isotonic scale parameter estimate and deviance
+#' @export
 gpd_isotonic_scale_projected_gradient <- function(y, scale, shape) {
     .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape)
 }
