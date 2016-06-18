@@ -4,12 +4,14 @@
 \alias{isotonic_scale_gpd_estimator}
 \title{Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter}
 \usage{
-isotonic_scale_gpd_estimator(y, shape)
+isotonic_scale_gpd_estimator(y, shape, max_repetitions = 100000L)
 }
 \arguments{
 \item{y}{numeric vector of the data}
 
 \item{shape}{double}
+
+\item{max_repetitions}{Maximal number of repetitions}
 }
 \value{
 isotonic scale parameter estimate and deviance

@@ -4,7 +4,8 @@
 \alias{gpd_isotonic_scale_projected_gradient}
 \title{Isotonic estimation (using a projected grdient method)}
 \usage{
-gpd_isotonic_scale_projected_gradient(y, scale, shape)
+gpd_isotonic_scale_projected_gradient(y, scale, shape,
+  max_repetitions = 100000L)
 }
 \arguments{
 \item{y}{numeric vector of the data}
@@ -12,6 +13,8 @@ gpd_isotonic_scale_projected_gradient(y, scale, shape)
 \item{scale}{numeric vector of the scape parameters}
 
 \item{shape}{double}
+
+\item{max_repetitions}{Maximal number of repetitions}
 }
 \value{
 isotonic scale parameter estimate and deviance

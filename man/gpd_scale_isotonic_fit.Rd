@@ -4,7 +4,7 @@
 \alias{gpd_scale_isotonic_fit}
 \title{Isotonic estimation (using an adapted version of the ICM algorithm)}
 \usage{
-gpd_scale_isotonic_fit(y, start, shape)
+gpd_scale_isotonic_fit(y, start, shape, max_repetitions = 100000L)
 }
 \arguments{
 \item{y}{numeric vector of the data}
@@ -12,6 +12,8 @@ gpd_scale_isotonic_fit(y, start, shape)
 \item{start}{Numeric vector of the initial scale parameters (will be forced to be admissible)}
 
 \item{shape}{double}
+
+\item{max_repetitions}{Maximal number of repetitions}
 }
 \value{
 isotonic scale parameter estimate and deviance

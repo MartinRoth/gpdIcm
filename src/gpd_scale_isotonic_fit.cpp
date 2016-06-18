@@ -29,16 +29,7 @@ NumericVector compute_convex_minorant_of_cumsum(NumericVector x, NumericVector y
   return newBeta;
 }
 
-//// [[Rcpp::export]]
-NumericVector compute_next_icm_gpd(NumericVector y, NumericVector scale, double shape) {
-  int ny = y.length();
-  NumericVector xx(ny, 1.0); 
-  NumericVector yy(ny);
-  for (int i = 0; i < ny; i++) {
-    yy[i] = scale[i] - compute_pd1_scale_nll_gpd(y[i], scale[i], shape);
-  }
-  return compute_convex_minorant_of_cumsum(xx, yy);
-}
+
 
 // ensure admissibility of new vectors
 //' Ensure admissibility of the GPD scale parameter
@@ -67,6 +58,17 @@ NumericVector make_gpd_admissible(NumericVector scale, NumericVector y, double s
     }
   }
   return z;
+}
+
+//// [[Rcpp::export]]
+NumericVector compute_next_icm_gpd(NumericVector y, NumericVector scale, double shape) {
+  int ny = y.length();
+  NumericVector xx(ny, 1.0); 
+  NumericVector yy(ny);
+  for (int i = 0; i < ny; i++) {
+    yy[i] = scale[i] - compute_pd1_scale_nll_gpd(y[i], scale[i], shape);
+  }
+  return compute_convex_minorant_of_cumsum(xx, yy);
 }
 
 //// search_line_icm_gpd
@@ -109,14 +111,14 @@ NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shap
    return gradient;
 }
 
-//´ Goldstein-Armijo search for ICM method
-//[Rcpp::export]
+// Goldstein-Armijo search for ICM method
+////[[Rcpp::export]]
 NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
   double b = 0.5;
   double s = 1.0;
   double m = 1e-4;
   int    e = 0;
-  int    maxExponent = 35;
+  int    maxExponent = 25;
   double a = s;
   
   NumericVector gradient = ComputeGradient(y, oldScale, shape); 
@@ -136,44 +138,11 @@ NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double sha
   return newScale;
 }
 
-// gpd_scale_isotonic_fit
-//' Isotonic estimation (using an adapted version of the ICM algorithm)
-//'
-//' @return isotonic scale parameter estimate and deviance
-//' @inheritParams compute_nll_gpd
-//' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
-//' @useDynLib gpdIcm
-//' @importFrom Rcpp evalCpp
-//' @export
-//[[Rcpp::export]]
-List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape) {
-
-  start = make_gpd_admissible(start, y, shape);
-  
-  int max_repetitions = 5e+7;
-  
-  double        value     = compute_nll_gpd(y, start, shape);
-  NumericVector new_scale = lineSearchICM(start, y, shape);
-  double        new_value = compute_nll_gpd(y, new_scale, shape);
-  
-  
-  int i = 0;
-  while (value - new_value > 1e-15 && i < max_repetitions) {
-    i++;
-    value     = new_value;
-    new_scale = lineSearchICM(new_scale, y, shape); 
-    new_value = compute_nll_gpd(y, new_scale, shape);
-  }
-  
-  double nll = compute_nll_gpd(y, new_scale, shape);
-  return List::create(Named("fitted.values") = new_scale, Named("deviance") = 2 * nll);
-}
-
 // gpd_Goldstein_Armijo_search
 NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale, NumericVector gradient, double shape, double ll) {
   
   int    ny = y.length();
-  int    max_exponent = 35;
+  int    max_exponent = 25;
   int    exponent = 0;
   double beta = 0.5;
   double initial_step = 2;
@@ -206,6 +175,7 @@ NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale,
   //Named("ll_old") = ll_old, Named("scalar") = scalar);
 }
 
+
 // gpd_projected_gradient_next_step
 NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector scale, double shape) {
   
@@ -221,45 +191,83 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
   return gpd_Goldstein_Armijo_search(y, scale, gradient, shape, ll);
 }
 
+// gpd_scale_isotonic_fit
+//' Isotonic estimation (using an adapted version of the ICM algorithm)
+//'
+//' @return isotonic scale parameter estimate and deviance
+//' @inheritParams compute_nll_gpd
+//' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
+//' @param max_repetitions Maximal number of repetitions
+//' @useDynLib gpdIcm
+//' @importFrom Rcpp evalCpp
+//' @export
+//[[Rcpp::export]]
+List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape, int max_repetitions = 1e+5) {
+
+  start = make_gpd_admissible(start, y, shape);
+  
+  double        value     = compute_nll_gpd(y, start, shape);
+  NumericVector scale     = start;
+  NumericVector new_scale = lineSearchICM(start, y, shape);
+  double        new_value = compute_nll_gpd(y, new_scale, shape);
+  
+  
+  int i = 0;
+  while ((value - new_value > 1e-6 || max(abs(scale - new_scale)) > 1e-6) && i < max_repetitions) {
+    i++;
+    value     = new_value;
+    scale     = new_scale;
+    new_scale = lineSearchICM(new_scale, y, shape); 
+    new_value = compute_nll_gpd(y, new_scale, shape);
+  }
+  
+  double nll = compute_nll_gpd(y, new_scale, shape);
+  return List::create(Named("fitted.values") = new_scale,
+                      Named("deviance") = 2 * nll,
+                      Named("convergence") = (i < max_repetitions));
+}
+
+
 // gpd_isotonic_scale_projected_gradient
 //' Isotonic estimation (using a projected grdient method)
 //'
 //' @note up to now only for positive shape parameters
 //'
 //' @inheritParams compute_nll_gpd
+//' @inheritParams gpd_scale_isotonic_fit
 //' @return isotonic scale parameter estimate and deviance
 //' @export
 //[[Rcpp::export]]
-List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape) {
+List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape, int max_repetitions = 1e+5) {
   scale = make_gpd_admissible(scale, y, shape);
   
-  NumericVector scale_old = scale;
+  NumericVector scale_new = scale;
   double        value     = compute_nll_gpd(y, scale, shape);
   double        new_value = compute_nll_gpd(y, scale, shape);
   int i = 0;
-  int max_iterations = 5e+7;
   do {
     value     = new_value;
     i        += 1;
-    scale_old = scale;
-    scale     = gpd_projected_gradient_next_step(y, scale_old, shape);
-    new_value = compute_nll_gpd(y, scale, shape);
-  //} while (is_true(any(scale != scale_old)) && i < max_iterations);
-  } while (value - new_value > 1e-15 && i < max_iterations);
+    scale     = scale_new;
+    scale_new = gpd_projected_gradient_next_step(y, scale, shape);
+    new_value = compute_nll_gpd(y, scale_new, shape);
+  } while ((value - new_value > 1e-6 || max(abs(scale - scale_new)) > 1e-6) && i < max_repetitions);
   
-  double nll = compute_nll_gpd(y, scale, shape);
-  return List::create(Named("fitted.values") = scale, Named("deviance") = 2 * nll);
+  double nll = compute_nll_gpd(y, scale_new, shape);
+  return List::create(Named("fitted.values") = scale_new,
+                      Named("deviance") = 2 * nll,
+                      Named("convergence") = (i < max_repetitions));
 }
 
 // isotonic_scale_gpd_estimator
 //' Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter 
 //'
-//'
 //' @inheritParams compute_nll_gpd
+//' @inheritParams gpd_scale_isotonic_fit
 //' @return isotonic scale parameter estimate and deviance
 //' @export
 //[[Rcpp::export]]
-List isotonic_scale_gpd_estimator (NumericVector y, NumericVector shape) {
+List isotonic_scale_gpd_estimator (NumericVector y, NumericVector shape, int max_repetitions = 1e+5) {
   
   NumericVector xi = shape;
   int           ny = y.length();
@@ -270,6 +278,7 @@ List isotonic_scale_gpd_estimator (NumericVector y, NumericVector shape) {
   Rcpp::List    z_best;
   double        best_shape;
   double        max_log_likelihood;
+  bool          convergence;
   NumericVector isoReg = compute_convex_minorant_of_cumsum(xx, y);
   
   z_best             = gpd_scale_isotonic_fit(y, isoReg, xi[0]);
@@ -278,7 +287,7 @@ List isotonic_scale_gpd_estimator (NumericVector y, NumericVector shape) {
   max_log_likelihood = log_likelihood[0];
   
   for(int i = 1; i < nxi; i++) {
-    z = gpd_scale_isotonic_fit(y, isoReg, xi[i]);
+    z = gpd_scale_isotonic_fit(y, isoReg, xi[i], max_repetitions);
     log_likelihood[i] = -(float)z["deviance"]/2.0;
     if (log_likelihood[i] > max_log_likelihood) {
       z_best = z;
@@ -289,6 +298,7 @@ List isotonic_scale_gpd_estimator (NumericVector y, NumericVector shape) {
   
   return List::create(Named("scale") = z_best["fitted.values"], 
     Named("shape") = best_shape, 
-    Named("deviance") = z_best["deviance"]);
+    Named("deviance") = z_best["deviance"],
+    Named("convergence") = z_best["convergence"]);
 }
 
