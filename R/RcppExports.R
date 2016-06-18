@@ -15,11 +15,12 @@ make_gpd_admissible <- function(scale, y, shape) {
 #' @return isotonic scale parameter estimate and deviance
 #' @inheritParams compute_nll_gpd
 #' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
+#' @param max_repetitions Maximal number of repetitions
 #' @useDynLib gpdIcm
 #' @importFrom Rcpp evalCpp
 #' @export
-gpd_scale_isotonic_fit <- function(y, start, shape) {
-    .Call('gpdIcm_gpd_scale_isotonic_fit', PACKAGE = 'gpdIcm', y, start, shape)
+gpd_scale_isotonic_fit <- function(y, start, shape, max_repetitions = 1e+5L) {
+    .Call('gpdIcm_gpd_scale_isotonic_fit', PACKAGE = 'gpdIcm', y, start, shape, max_repetitions)
 }
 
 #' Isotonic estimation (using a projected grdient method)
@@ -27,20 +28,21 @@ gpd_scale_isotonic_fit <- function(y, start, shape) {
 #' @note up to now only for positive shape parameters
 #'
 #' @inheritParams compute_nll_gpd
+#' @inheritParams gpd_scale_isotonic_fit
 #' @return isotonic scale parameter estimate and deviance
 #' @export
-gpd_isotonic_scale_projected_gradient <- function(y, scale, shape) {
-    .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape)
+gpd_isotonic_scale_projected_gradient <- function(y, scale, shape, max_repetitions = 1e+5L) {
+    .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape, max_repetitions)
 }
 
 #' Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter 
 #'
-#'
 #' @inheritParams compute_nll_gpd
+#' @inheritParams gpd_scale_isotonic_fit
 #' @return isotonic scale parameter estimate and deviance
 #' @export
-isotonic_scale_gpd_estimator <- function(y, shape) {
-    .Call('gpdIcm_isotonic_scale_gpd_estimator', PACKAGE = 'gpdIcm', y, shape)
+isotonic_scale_gpd_estimator <- function(y, shape, max_repetitions = 1e+5L) {
+    .Call('gpdIcm_isotonic_scale_gpd_estimator', PACKAGE = 'gpdIcm', y, shape, max_repetitions)
 }
 
 #' Computes the negative log likelihood for the GPD

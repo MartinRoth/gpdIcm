@@ -60,3 +60,14 @@ test_that("GPD scale isotonic fit", {
 test_that("Profile likelihood estimation", {
   expect_equal_to_reference(isotonic_scale_gpd_estimator(yTest, profileShape), "./outputTests/ProfileLikelihoodMaximizer.rds")
 })
+
+context("Failed Convergence")
+
+load("badSimulation.rda")
+test_that("Convergence fails", {
+  startValue <-  isoreg(yBadTest)$yf
+  tmp1 <- gpd_scale_isotonic_fit(yBadTest, startValue,  shapeBadTest)
+  tmp2 <- gpd_isotonic_scale_projected_gradient(yBadTest, startValue, shapeBadTest)
+  expect_false(tmp1$convergence)
+  expect_false(tmp2$convergence)
+})
