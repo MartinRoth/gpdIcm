@@ -2,6 +2,6 @@
 gpdIcm
 ------
 
-Isotonic regression for the generalized Pareto distribution
-
 [![Build Status](https://travis-ci.org/MartinRoth/gpdIcm.png?branch=master)](https://travis-ci.org/MartinRoth/gpdIcm) [![Coverage Status](https://img.shields.io/codecov/c/github/MartinRoth/gpdIcm/master.svg)](https://codecov.io/github/MartinRoth/gpdIcm?branch=master)
+
+Isotonic regression for the scale parameter of the Generalized Pareto distribution (GPD).
