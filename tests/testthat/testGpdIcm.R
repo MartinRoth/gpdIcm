@@ -72,7 +72,6 @@ context("Failed Convergence")
 
 load("badSimulation.rda")
 test_that("Convergence fails", {
-  skip_on_travis()
   startValue <-  isoreg(yBadTest)$yf
   tmp1 <- gpd_scale_isotonic_fit(yBadTest, startValue,  shapeBadTest)
   tmp2 <- gpd_isotonic_scale_projected_gradient(yBadTest, startValue, shapeBadTest)
