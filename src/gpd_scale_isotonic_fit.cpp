@@ -259,17 +259,54 @@ List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale
                       Named("convergence") = (i < max_repetitions));
 }
 
+struct add_multiple {
+  int incr;
+  int count;
+  add_multiple(int incr)
+    : incr(incr), count(0)
+  {}
+  inline int operator()(int d) {
+    return d + incr * count++;
+  }
+};
+
+// obtained from http://stackoverflow.com/questions/31336548/rcpp-version-of-base-r-seq-drops-values
+NumericVector rcpp_seq(double from_, double to_, double by_ = 1.0) {
+  int adjust = std::pow(10, std::ceil(std::log10(10 / by_)) - 1);
+  int from = adjust * from_;
+  int to = adjust * to_;
+  int by = adjust * by_;
+  
+  std::size_t n = ((to - from) / by) + 1;
+  Rcpp::IntegerVector res = Rcpp::rep(from, n);
+  add_multiple ftor(by);
+  
+  std::transform(res.begin(), res.end(), res.begin(), ftor);
+  return Rcpp::NumericVector(res) / adjust;
+}
+
+NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
+  return rcpp_seq(from_, to_, by_);
+}
+
 // isotonic_scale_gpd_estimator
-//' Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter 
+//' Estimation of GPD parameters with fixed shape parameter and non-decreasing
+//' scale parameter 
 //'
 //' @inheritParams compute_nll_gpd
 //' @inheritParams gpd_scale_isotonic_fit
+//' @param min_shape double minimum shape value
+//' @param max_shape double maximum shape value
+//' @param by double step size for the profile likelihood 
 //' @return isotonic scale parameter estimate and deviance
 //' @export
 //[[Rcpp::export]]
-List isotonic_scale_gpd_estimator (NumericVector y, NumericVector shape, int max_repetitions = 1e+5) {
+List isotonic_scale_gpd_estimator (NumericVector y, double min_shape,
+                                   double max_shape, double by = 0.01,
+                                   int max_repetitions = 1e+5) {
   
-  NumericVector xi = shape;
+  // NumericVector xi = shape;
+  NumericVector xi = generate_shape_grid(min_shape, max_shape, by);
   int           ny = y.length();
   int           nxi = xi.length();
   NumericVector xx(ny, 1.0);
@@ -280,14 +317,15 @@ List isotonic_scale_gpd_estimator (NumericVector y, NumericVector shape, int max
   double        max_log_likelihood;
   bool          convergence;
   NumericVector isoReg = compute_convex_minorant_of_cumsum(xx, y);
+  NumericVector startValue = isoReg;
   
-  z_best             = gpd_scale_isotonic_fit(y, isoReg, xi[0]);
+  z_best             = gpd_scale_isotonic_fit(y, startValue, xi[0]);
   best_shape         = xi[0];
   log_likelihood[0]  = -(float)z_best["deviance"]/2.0;
   max_log_likelihood = log_likelihood[0];
   
   for(int i = 1; i < nxi; i++) {
-    z = gpd_scale_isotonic_fit(y, isoReg, xi[i], max_repetitions);
+    z = gpd_scale_isotonic_fit(y, startValue, xi[i], max_repetitions);
     log_likelihood[i] = -(float)z["deviance"]/2.0;
     if (log_likelihood[i] > max_log_likelihood) {
       z_best = z;

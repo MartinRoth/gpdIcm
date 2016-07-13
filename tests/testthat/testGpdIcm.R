@@ -58,7 +58,7 @@ test_that("GPD scale isotonic fit", {
 })
 
 test_that("Profile likelihood estimation", {
-  expect_equal_to_reference(isotonic_scale_gpd_estimator(yTest, profileShape), "./outputTests/ProfileLikelihoodMaximizer.rds")
+  expect_equal_to_reference(isotonic_scale_gpd_estimator(yTest, -0.5, 0.3), "./outputTests/ProfileLikelihoodMaximizer.rds")
 })
 
 context("Failed Convergence")

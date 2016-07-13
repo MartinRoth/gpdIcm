@@ -35,14 +35,18 @@ gpd_isotonic_scale_projected_gradient <- function(y, scale, shape, max_repetitio
     .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape, max_repetitions)
 }
 
-#' Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter 
+#' Estimation of GPD parameters with fixed shape parameter and non-decreasing
+#' scale parameter 
 #'
 #' @inheritParams compute_nll_gpd
 #' @inheritParams gpd_scale_isotonic_fit
+#' @param min_shape double minimum shape value
+#' @param max_shape double maximum shape value
+#' @param by double step size for the profile likelihood 
 #' @return isotonic scale parameter estimate and deviance
 #' @export
-isotonic_scale_gpd_estimator <- function(y, shape, max_repetitions = 1e+5L) {
-    .Call('gpdIcm_isotonic_scale_gpd_estimator', PACKAGE = 'gpdIcm', y, shape, max_repetitions)
+isotonic_scale_gpd_estimator <- function(y, min_shape, max_shape, by = 0.01, max_repetitions = 1e+5L) {
+    .Call('gpdIcm_isotonic_scale_gpd_estimator', PACKAGE = 'gpdIcm', y, min_shape, max_shape, by, max_repetitions)
 }
 
 #' Computes the negative log likelihood for the GPD

@@ -2,14 +2,20 @@
 % Please edit documentation in R/RcppExports.R
 \name{isotonic_scale_gpd_estimator}
 \alias{isotonic_scale_gpd_estimator}
-\title{Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter}
+\title{Estimation of GPD parameters with fixed shape parameter and non-decreasing
+scale parameter}
 \usage{
-isotonic_scale_gpd_estimator(y, shape, max_repetitions = 100000L)
+isotonic_scale_gpd_estimator(y, min_shape, max_shape, by = 0.01,
+  max_repetitions = 100000L)
 }
 \arguments{
 \item{y}{numeric vector of the data}
 
-\item{shape}{double}
+\item{min_shape}{double minimum shape value}
+
+\item{max_shape}{double maximum shape value}
+
+\item{by}{double step size for the profile likelihood}
 
 \item{max_repetitions}{Maximal number of repetitions}
 }
@@ -17,6 +23,7 @@ isotonic_scale_gpd_estimator(y, shape, max_repetitions = 100000L)
 isotonic scale parameter estimate and deviance
 }
 \description{
-Estimation of GPD parameters with fixed shape parameter and non-decreasing scale parameter
+Estimation of GPD parameters with fixed shape parameter and non-decreasing
+scale parameter
 }
 

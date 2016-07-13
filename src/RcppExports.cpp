@@ -47,15 +47,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // isotonic_scale_gpd_estimator
-List isotonic_scale_gpd_estimator(NumericVector y, NumericVector shape, int max_repetitions);
-RcppExport SEXP gpdIcm_isotonic_scale_gpd_estimator(SEXP ySEXP, SEXP shapeSEXP, SEXP max_repetitionsSEXP) {
+List isotonic_scale_gpd_estimator(NumericVector y, double min_shape, double max_shape, double by, int max_repetitions);
+RcppExport SEXP gpdIcm_isotonic_scale_gpd_estimator(SEXP ySEXP, SEXP min_shapeSEXP, SEXP max_shapeSEXP, SEXP bySEXP, SEXP max_repetitionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type shape(shapeSEXP);
+    Rcpp::traits::input_parameter< double >::type min_shape(min_shapeSEXP);
+    Rcpp::traits::input_parameter< double >::type max_shape(max_shapeSEXP);
+    Rcpp::traits::input_parameter< double >::type by(bySEXP);
     Rcpp::traits::input_parameter< int >::type max_repetitions(max_repetitionsSEXP);
-    __result = Rcpp::wrap(isotonic_scale_gpd_estimator(y, shape, max_repetitions));
+    __result = Rcpp::wrap(isotonic_scale_gpd_estimator(y, min_shape, max_shape, by, max_repetitions));
     return __result;
 END_RCPP
 }
