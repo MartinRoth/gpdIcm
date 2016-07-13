@@ -64,7 +64,7 @@ test_that("Profile likelihood estimation", {
   expect_equal_to_reference(isotonic_scale_gpd_estimator(yTest, -0.5, 0.3), "./outputTests/ProfileLikelihoodMaximizer.rds")
   expect_error(isotonic_scale_gpd_estimator(yTest, 0.1, 0.3), "Zero should be included in the interval")
   
-  yTestFrechet <- rgpd(100, 0, seq(1,2, length.out = 100), 0.2)
+  yTestFrechet <- rgpd(500, 0, c(rep(1, 200), seq(1,1.1, length.out = 100), rep(1.1, 200)), 0.3)
   expect_equal_to_reference(isotonic_scale_gpd_estimator(yTestFrechet, -0.1, 0.4), "./outputTests/ProfileLikelihoodMaximizerFrechet.rds")
 })
 
@@ -72,6 +72,7 @@ context("Failed Convergence")
 
 load("badSimulation.rda")
 test_that("Convergence fails", {
+  skip_on_travis()
   startValue <-  isoreg(yBadTest)$yf
   tmp1 <- gpd_scale_isotonic_fit(yBadTest, startValue,  shapeBadTest)
   tmp2 <- gpd_isotonic_scale_projected_gradient(yBadTest, startValue, shapeBadTest)
