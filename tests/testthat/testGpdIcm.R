@@ -59,6 +59,7 @@ test_that("GPD scale isotonic fit", {
 
 test_that("Profile likelihood estimation", {
   expect_equal_to_reference(isotonic_scale_gpd_estimator(yTest, -0.5, 0.3), "./outputTests/ProfileLikelihoodMaximizer.rds")
+  expect_error(isotonic_scale_gpd_estimator(yTest, 0.1, 0.3), "Zero should be included in the interval")
 })
 
 context("Failed Convergence")

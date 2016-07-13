@@ -1,5 +1,6 @@
 #include <Rcpp.h>
 #include <vector>
+#include <algorithm>
 #include "rcpp_convex_minorant.h"
 #include "nll_gpd.h"
 
@@ -286,6 +287,9 @@ NumericVector rcpp_seq(double from_, double to_, double by_ = 1.0) {
 }
 
 NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
+  if (from_ >= 0 || to_ <= 0) {
+    stop("Zero should be included in the interval");
+  }
   return rcpp_seq(from_, to_, by_);
 }
 
@@ -319,14 +323,30 @@ List isotonic_scale_gpd_estimator (NumericVector y, double min_shape,
   NumericVector isoReg = compute_convex_minorant_of_cumsum(xx, y);
   NumericVector startValue = isoReg;
   
-  z_best             = gpd_scale_isotonic_fit(y, startValue, xi[0]);
-  best_shape         = xi[0];
-  log_likelihood[0]  = -(float)z_best["deviance"]/2.0;
-  max_log_likelihood = log_likelihood[0];
+  int posZero = which_min(abs(xi));
   
-  for(int i = 1; i < nxi; i++) {
+  z_best             = gpd_scale_isotonic_fit(y, startValue, xi[posZero], max_repetitions); 
+  best_shape         = xi[posZero];
+  log_likelihood[posZero]  = -(float)z_best["deviance"]/2.0;
+  max_log_likelihood = log_likelihood[posZero];
+  
+  for(int i = posZero + 1; i < nxi; i++) {
+    z = gpd_scale_isotonic_fit(y, startValue, xi[i], max_repetitions);
+    log_likelihood[i] = -(float)z["deviance"] / 2.0;
+    startValue = z["fitted.values"];
+    if (log_likelihood[i] > max_log_likelihood) {
+      z_best = z;
+      best_shape = xi[i];
+      max_log_likelihood = log_likelihood[i];
+    }
+  }
+  
+  startValue = isoReg;
+  
+  for(int i = posZero - 1; i >= 0; i--) {
     z = gpd_scale_isotonic_fit(y, startValue, xi[i], max_repetitions);
     log_likelihood[i] = -(float)z["deviance"]/2.0;
+    startValue = z["fitted.values"];
     if (log_likelihood[i] > max_log_likelihood) {
       z_best = z;
       best_shape = xi[i];
@@ -338,5 +358,5 @@ List isotonic_scale_gpd_estimator (NumericVector y, double min_shape,
     Named("shape") = best_shape, 
     Named("deviance") = z_best["deviance"],
     Named("convergence") = z_best["convergence"]);
+    // Named("posZero") = posZero);
 }
-
