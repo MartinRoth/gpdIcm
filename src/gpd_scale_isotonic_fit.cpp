@@ -319,7 +319,6 @@ List isotonic_scale_gpd_estimator (NumericVector y, double min_shape,
   Rcpp::List    z_best;
   double        best_shape;
   double        max_log_likelihood;
-  bool          convergence;
   NumericVector isoReg = compute_convex_minorant_of_cumsum(xx, y);
   NumericVector startValue = isoReg;
   
