@@ -115,12 +115,12 @@ NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shap
 // Goldstein-Armijo search for ICM method
 ////[[Rcpp::export]]
 NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
-  double b = 0.5;
-  double s = 1.0;
-  double m = 1e-4;
+  double beta = 0.5;
+  double step = 1.0;
+  double mu = 1e-4;
   int    e = 0;
   int    maxExponent = 25;
-  double a = s;
+  double a = step;
   
   NumericVector gradient = ComputeGradient(y, oldScale, shape); 
   
@@ -129,9 +129,9 @@ NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double sha
   NumericVector newScale = make_gpd_admissible(oldScale + a * direction, y, shape);
   double nllNew = compute_nll_gpd(y, newScale, shape);
   double scalar = compute_scalar_product(gradient, oldScale - newScale);
-  while ( (e < maxExponent) && (nllOld - nllNew < m * scalar)) {
+  while ( (e < maxExponent) && (nllOld - nllNew < mu * scalar)) {
     e += 1;
-    a *= b;
+    a *= beta;
     newScale = make_gpd_admissible(oldScale + a * direction, y, shape);
     nllNew = compute_nll_gpd(y, newScale, shape);
     scalar = compute_scalar_product(gradient, oldScale - newScale);
@@ -148,6 +148,7 @@ NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale,
   double beta = 0.5;
   double initial_step = 2;
   double ll_old = ll;
+  double mu = 1e-4;
   
   NumericVector xx(ny, 1.0);
   NumericVector yy(ny, 0.0);
@@ -163,7 +164,7 @@ NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale,
   
   ll = compute_nll_gpd(y, projection, shape);
   
-  while ((ll_old - ll < 1e-4 * scalar) && exponent < max_exponent) {
+  while ((ll_old - ll < mu * scalar) && exponent < max_exponent) {
     exponent  += 1;
     yy         = scale - pow(beta, exponent) * initial_step * gradient;
     projection = make_gpd_admissible(compute_convex_minorant_of_cumsum(xx, yy), y, shape);
