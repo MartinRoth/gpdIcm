@@ -230,7 +230,7 @@ List FitIsoScaleFixedICM (NumericVector y, NumericVector start, double shape, in
 }
 
 
-// gpd_isotonic_scale_projected_gradient
+// FitIsoScaleFixedPG
 //' Isotonic estimation (using a projected gradient method)
 //'
 //' @note up to now only for positive shape parameters
@@ -240,7 +240,7 @@ List FitIsoScaleFixedICM (NumericVector y, NumericVector start, double shape, in
 //' @return isotonic scale parameter estimate and deviance
 //' @export
 //[[Rcpp::export]]
-List gpd_isotonic_scale_projected_gradient (NumericVector y, NumericVector scale, double shape, int max_repetitions = 1e+5) {
+List FitIsoScaleFixedPG (NumericVector y, NumericVector scale, double shape, int max_repetitions = 1e+5) {
   scale = MakeScaleAdmissible(scale, y, shape);
   
   NumericVector scale_new = scale;

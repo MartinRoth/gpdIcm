@@ -31,8 +31,8 @@ FitIsoScaleFixedICM <- function(y, start, shape, max_repetitions = 1e+5L) {
 #' @inheritParams FitIsoScaleFixedICM
 #' @return isotonic scale parameter estimate and deviance
 #' @export
-gpd_isotonic_scale_projected_gradient <- function(y, scale, shape, max_repetitions = 1e+5L) {
-    .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape, max_repetitions)
+FitIsoScaleFixedPG <- function(y, scale, shape, max_repetitions = 1e+5L) {
+    .Call('gpdIcm_FitIsoScaleFixedPG', PACKAGE = 'gpdIcm', y, scale, shape, max_repetitions)
 }
 
 #' Estimation of GPD parameters with constant shape parameter and non-decreasing
