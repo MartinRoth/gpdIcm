@@ -12,7 +12,7 @@ load("CETvalues.rda")
 
 
 
-newScale <- make_gpd_admissible(scaleTest, yTest, -0.5) 
+newScale <- MakeScaleAdmissible(scaleTest, yTest, -0.5) 
 profileShape <- seq(-0.5, 0.3, by = 0.01)
 
 context("Likelihood calculations")
@@ -39,13 +39,13 @@ test_that("Partial derivative", {
 
 context("Ensure admissibility")
 test_that("Only admissable scale values", {
-  expect_equal(make_gpd_admissible(-1, 1, 0), 1e-8)
-  expect_equal(make_gpd_admissible(-1, 1, 0.1), 1e-8)
-  expect_equal(make_gpd_admissible(-1, 1, -0.1), 0.1 + 1e-8)
-  expect_equal(make_gpd_admissible(0.05, 1, -0.1), 0.1 + 1e-8)
-  expect_equal(make_gpd_admissible(c(0.05, 0.05, 0.05), c(1, 0.9, 2), -0.1),
+  expect_equal(MakeScaleAdmissible(-1, 1, 0), 1e-8)
+  expect_equal(MakeScaleAdmissible(-1, 1, 0.1), 1e-8)
+  expect_equal(MakeScaleAdmissible(-1, 1, -0.1), 0.1 + 1e-8)
+  expect_equal(MakeScaleAdmissible(0.05, 1, -0.1), 0.1 + 1e-8)
+  expect_equal(MakeScaleAdmissible(c(0.05, 0.05, 0.05), c(1, 0.9, 2), -0.1),
                c(0.1, 0.1, 0.2)+1e-8)
-  expect_equal_to_reference(make_gpd_admissible(scaleTest, yTest, -0.5), "./outputTests/AdmissableScale.rds")
+  expect_equal_to_reference(MakeScaleAdmissible(scaleTest, yTest, -0.5), "./outputTests/AdmissableScale.rds")
 })
 
 context("Isotonic fits")

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{gpd_isotonic_scale_projected_gradient}
 \alias{gpd_isotonic_scale_projected_gradient}
-\title{Isotonic estimation (using a projected grdient method)}
+\title{Isotonic estimation (using a projected gradient method)}
 \usage{
 gpd_isotonic_scale_projected_gradient(y, scale, shape,
   max_repetitions = 100000L)
@@ -20,7 +20,7 @@ gpd_isotonic_scale_projected_gradient(y, scale, shape,
 isotonic scale parameter estimate and deviance
 }
 \description{
-Isotonic estimation (using a projected grdient method)
+Isotonic estimation (using a projected gradient method)
 }
 \note{
 up to now only for positive shape parameters

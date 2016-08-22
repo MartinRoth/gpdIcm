@@ -5,16 +5,16 @@
 
 using namespace Rcpp;
 
-// make_gpd_admissible
-NumericVector make_gpd_admissible(NumericVector scale, NumericVector y, double shape);
-RcppExport SEXP gpdIcm_make_gpd_admissible(SEXP scaleSEXP, SEXP ySEXP, SEXP shapeSEXP) {
+// MakeScaleAdmissible
+NumericVector MakeScaleAdmissible(NumericVector scale, NumericVector y, double shape);
+RcppExport SEXP gpdIcm_MakeScaleAdmissible(SEXP scaleSEXP, SEXP ySEXP, SEXP shapeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericVector >::type scale(scaleSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
     Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
-    __result = Rcpp::wrap(make_gpd_admissible(scale, y, shape));
+    __result = Rcpp::wrap(MakeScaleAdmissible(scale, y, shape));
     return __result;
 END_RCPP
 }

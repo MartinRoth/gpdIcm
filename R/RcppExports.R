@@ -6,8 +6,8 @@
 #'
 #' @inheritParams compute_nll_gpd
 #' @return isotonic scale parameter that does not violate the GPD constraint
-make_gpd_admissible <- function(scale, y, shape) {
-    .Call('gpdIcm_make_gpd_admissible', PACKAGE = 'gpdIcm', scale, y, shape)
+MakeScaleAdmissible <- function(scale, y, shape) {
+    .Call('gpdIcm_MakeScaleAdmissible', PACKAGE = 'gpdIcm', scale, y, shape)
 }
 
 #' Isotonic estimation (using an adapted version of the ICM algorithm)
@@ -23,7 +23,7 @@ gpd_scale_isotonic_fit <- function(y, start, shape, max_repetitions = 1e+5L) {
     .Call('gpdIcm_gpd_scale_isotonic_fit', PACKAGE = 'gpdIcm', y, start, shape, max_repetitions)
 }
 
-#' Isotonic estimation (using a projected grdient method)
+#' Isotonic estimation (using a projected gradient method)
 #'
 #' @note up to now only for positive shape parameters
 #'
