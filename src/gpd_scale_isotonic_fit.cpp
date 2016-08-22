@@ -114,7 +114,7 @@ NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shap
 
 // Goldstein-Armijo search for ICM method
 ////[[Rcpp::export]]
-NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
+NumericVector LineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
   double beta = 0.5;
   double step = 1.0;
   double mu = 1e-4;
@@ -139,8 +139,8 @@ NumericVector lineSearchICM (NumericVector oldScale, NumericVector y, double sha
   return newScale;
 }
 
-// gpd_Goldstein_Armijo_search
-NumericVector gpd_Goldstein_Armijo_search (NumericVector y, NumericVector scale, NumericVector gradient, double shape, double ll) {
+// LineSearchPG
+NumericVector LineSearchPG (NumericVector y, NumericVector scale, NumericVector gradient, double shape, double ll) {
   
   int    ny = y.length();
   int    max_exponent = 25; //31;
@@ -190,7 +190,7 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
     gradient[i] = compute_pd1_scale_nll_gpd(y[i], scale[i], shape);
   }
   
-  return gpd_Goldstein_Armijo_search(y, scale, gradient, shape, ll);
+  return LineSearchPG(y, scale, gradient, shape, ll);
 }
 
 // gpd_scale_isotonic_fit
@@ -210,7 +210,7 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape,
   
   double        value     = compute_nll_gpd(y, start, shape);
   NumericVector scale     = start;
-  NumericVector new_scale = lineSearchICM(start, y, shape);
+  NumericVector new_scale = LineSearchICM(start, y, shape);
   double        new_value = compute_nll_gpd(y, new_scale, shape);
   
   
@@ -219,7 +219,7 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape,
     i++;
     value     = new_value;
     scale     = new_scale;
-    new_scale = lineSearchICM(new_scale, y, shape); 
+    new_scale = LineSearchICM(new_scale, y, shape); 
     new_value = compute_nll_gpd(y, new_scale, shape);
   }
   
