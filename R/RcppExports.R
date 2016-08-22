@@ -19,8 +19,8 @@ MakeScaleAdmissible <- function(scale, y, shape) {
 #' @useDynLib gpdIcm
 #' @importFrom Rcpp evalCpp
 #' @export
-gpd_scale_isotonic_fit <- function(y, start, shape, max_repetitions = 1e+5L) {
-    .Call('gpdIcm_gpd_scale_isotonic_fit', PACKAGE = 'gpdIcm', y, start, shape, max_repetitions)
+FitIsoScaleFixedICM <- function(y, start, shape, max_repetitions = 1e+5L) {
+    .Call('gpdIcm_FitIsoScaleFixedICM', PACKAGE = 'gpdIcm', y, start, shape, max_repetitions)
 }
 
 #' Isotonic estimation (using a projected gradient method)
@@ -28,7 +28,7 @@ gpd_scale_isotonic_fit <- function(y, start, shape, max_repetitions = 1e+5L) {
 #' @note up to now only for positive shape parameters
 #'
 #' @inheritParams compute_nll_gpd
-#' @inheritParams gpd_scale_isotonic_fit
+#' @inheritParams FitIsoScaleFixedICM
 #' @return isotonic scale parameter estimate and deviance
 #' @export
 gpd_isotonic_scale_projected_gradient <- function(y, scale, shape, max_repetitions = 1e+5L) {
@@ -39,7 +39,7 @@ gpd_isotonic_scale_projected_gradient <- function(y, scale, shape, max_repetitio
 #' scale parameter 
 #'
 #' @inheritParams compute_nll_gpd
-#' @inheritParams gpd_scale_isotonic_fit
+#' @inheritParams FitIsoScaleFixedICM
 #' @param min_shape double minimum shape value
 #' @param max_shape double maximum shape value
 #' @param by double step size for the profile likelihood 

@@ -18,9 +18,9 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// gpd_scale_isotonic_fit
-List gpd_scale_isotonic_fit(NumericVector y, NumericVector start, double shape, int max_repetitions);
-RcppExport SEXP gpdIcm_gpd_scale_isotonic_fit(SEXP ySEXP, SEXP startSEXP, SEXP shapeSEXP, SEXP max_repetitionsSEXP) {
+// FitIsoScaleFixedICM
+List FitIsoScaleFixedICM(NumericVector y, NumericVector start, double shape, int max_repetitions);
+RcppExport SEXP gpdIcm_FitIsoScaleFixedICM(SEXP ySEXP, SEXP startSEXP, SEXP shapeSEXP, SEXP max_repetitionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -28,7 +28,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type start(startSEXP);
     Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
     Rcpp::traits::input_parameter< int >::type max_repetitions(max_repetitionsSEXP);
-    __result = Rcpp::wrap(gpd_scale_isotonic_fit(y, start, shape, max_repetitions));
+    __result = Rcpp::wrap(FitIsoScaleFixedICM(y, start, shape, max_repetitions));
     return __result;
 END_RCPP
 }

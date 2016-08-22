@@ -193,7 +193,7 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
   return LineSearchPG(y, scale, gradient, shape, ll);
 }
 
-// gpd_scale_isotonic_fit
+// FitIsoScaleFixedICM
 //' Isotonic estimation (using an adapted version of the ICM algorithm)
 //'
 //' @return isotonic scale parameter estimate and deviance
@@ -204,7 +204,7 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //' @importFrom Rcpp evalCpp
 //' @export
 //[[Rcpp::export]]
-List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape, int max_repetitions = 1e+5) {
+List FitIsoScaleFixedICM (NumericVector y, NumericVector start, double shape, int max_repetitions = 1e+5) {
 
   start = MakeScaleAdmissible(start, y, shape);
   
@@ -236,7 +236,7 @@ List gpd_scale_isotonic_fit (NumericVector y, NumericVector start, double shape,
 //' @note up to now only for positive shape parameters
 //'
 //' @inheritParams compute_nll_gpd
-//' @inheritParams gpd_scale_isotonic_fit
+//' @inheritParams FitIsoScaleFixedICM
 //' @return isotonic scale parameter estimate and deviance
 //' @export
 //[[Rcpp::export]]
@@ -299,7 +299,7 @@ NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
 //' scale parameter 
 //'
 //' @inheritParams compute_nll_gpd
-//' @inheritParams gpd_scale_isotonic_fit
+//' @inheritParams FitIsoScaleFixedICM
 //' @param min_shape double minimum shape value
 //' @param max_shape double maximum shape value
 //' @param by double step size for the profile likelihood 
@@ -325,13 +325,13 @@ List FitIsoScaleGPD (NumericVector y, double min_shape,
   
   int posZero = which_min(abs(xi));
   
-  z_best             = gpd_scale_isotonic_fit(y, startValue, xi[posZero], max_repetitions); 
+  z_best             = FitIsoScaleFixedICM(y, startValue, xi[posZero], max_repetitions); 
   best_shape         = xi[posZero];
   log_likelihood[posZero]  = -(float)z_best["deviance"]/2.0;
   max_log_likelihood = log_likelihood[posZero];
   
   for(int i = posZero + 1; i < nxi; i++) {
-    z = gpd_scale_isotonic_fit(y, startValue, xi[i], max_repetitions);
+    z = FitIsoScaleFixedICM(y, startValue, xi[i], max_repetitions);
     log_likelihood[i] = -(float)z["deviance"] / 2.0;
     startValue = z["fitted.values"];
     if (log_likelihood[i] > max_log_likelihood) {
@@ -344,7 +344,7 @@ List FitIsoScaleGPD (NumericVector y, double min_shape,
   startValue = isoReg;
   
   for(int i = posZero - 1; i >= 0; i--) {
-    z = gpd_scale_isotonic_fit(y, startValue, xi[i], max_repetitions);
+    z = FitIsoScaleFixedICM(y, startValue, xi[i], max_repetitions);
     log_likelihood[i] = -(float)z["deviance"]/2.0;
     startValue = z["fitted.values"];
     if (log_likelihood[i] > max_log_likelihood) {

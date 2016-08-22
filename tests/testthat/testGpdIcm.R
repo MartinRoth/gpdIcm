@@ -51,9 +51,9 @@ test_that("Only admissable scale values", {
 context("Isotonic fits")
 
 test_that("GPD scale isotonic fit", {
-  scaleFitFrechet <- gpd_scale_isotonic_fit(yTest, scaleTest,  0.1)
-  scaleFitGumbel  <- gpd_scale_isotonic_fit(yTest, scaleTest,  0.0)
-  scaleFitWeibull <- gpd_scale_isotonic_fit(yTest, scaleTest, -0.1)
+  scaleFitFrechet <- FitIsoScaleFixedICM(yTest, scaleTest,  0.1)
+  scaleFitGumbel  <- FitIsoScaleFixedICM(yTest, scaleTest,  0.0)
+  scaleFitWeibull <- FitIsoScaleFixedICM(yTest, scaleTest, -0.1)
   expect_equal_to_reference(scaleFitFrechet, "./outputTests/scaleFitFrechet.rds")
   expect_equal_to_reference(scaleFitGumbel, "./outputTests/scaleFitGumbel.rds")
   expect_equal_to_reference(scaleFitWeibull, "./outputTests/scaleFitWeibull.rds")
@@ -82,7 +82,7 @@ context("Failed Convergence")
 load("badSimulation.rda")
 test_that("Convergence fails", {
   startValue <-  isoreg(yBadTest)$yf
-  tmp1 <- gpd_scale_isotonic_fit(yBadTest, startValue,  shapeBadTest)
+  tmp1 <- FitIsoScaleFixedICM(yBadTest, startValue,  shapeBadTest)
   tmp2 <- gpd_isotonic_scale_projected_gradient(yBadTest, startValue, shapeBadTest)
   expect_false(tmp1$convergence)
   expect_false(tmp2$convergence)
