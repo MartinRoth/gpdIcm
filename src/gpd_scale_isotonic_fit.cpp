@@ -112,9 +112,9 @@ NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shap
    return gradient;
 }
 
-// Goldstein-Armijo search for ICM method
 ////[[Rcpp::export]]
 NumericVector LineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
+  // Goldstein-Armijo search for ICM method
   double beta = 0.5;
   double step = 1.0;
   double mu = 1e-4;
@@ -141,12 +141,12 @@ NumericVector LineSearchICM (NumericVector oldScale, NumericVector y, double sha
 
 // LineSearchPG
 NumericVector LineSearchPG (NumericVector y, NumericVector scale, NumericVector gradient, double shape, double ll) {
-  
+  // Goldstein-Armijo type choice of scaling factor
   int    ny = y.length();
-  int    max_exponent = 25; //31;
+  int    max_exponent = 31;
   int    exponent = 0;
   double beta = 0.5;
-  double initial_step = 2; //128;
+  double initial_step = 128;
   double ll_old = ll;
   double mu = 1e-4;
   

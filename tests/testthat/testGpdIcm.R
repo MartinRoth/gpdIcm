@@ -51,12 +51,21 @@ test_that("Only admissable scale values", {
 context("Isotonic fits")
 
 test_that("GPD scale isotonic fit", {
-  expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.1), "./outputTests/scaleFitFrechet.rds")
-  expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest,  0.0), "./outputTests/scaleFitGumbel.rds")
-  expect_equal_to_reference(gpd_scale_isotonic_fit(yTest, scaleTest, -0.1), "./outputTests/scaleFitWeibull.rds")
-  expect_equal_to_reference(gpd_isotonic_scale_projected_gradient(yTest, scaleTest,  0.1), "./outputTests/scaleFitFrechet.rds")
-  expect_equal_to_reference(gpd_isotonic_scale_projected_gradient(yTest, scaleTest,  0.0), "./outputTests/scaleFitGumbel.rds")
-  expect_equal_to_reference(gpd_isotonic_scale_projected_gradient(yTest, scaleTest, -0.1), "./outputTests/scaleFitWeibull.rds")
+  scaleFitFrechet <- gpd_scale_isotonic_fit(yTest, scaleTest,  0.1)
+  scaleFitGumbel  <- gpd_scale_isotonic_fit(yTest, scaleTest,  0.0)
+  scaleFitWeibull <- gpd_scale_isotonic_fit(yTest, scaleTest, -0.1)
+  expect_equal_to_reference(scaleFitFrechet, "./outputTests/scaleFitFrechet.rds")
+  expect_equal_to_reference(scaleFitGumbel, "./outputTests/scaleFitGumbel.rds")
+  expect_equal_to_reference(scaleFitWeibull, "./outputTests/scaleFitWeibull.rds")
+  scaleFitFrechetPG <- gpd_isotonic_scale_projected_gradient(yTest, scaleTest,  0.1)
+  scaleFitGumbelPG  <- gpd_isotonic_scale_projected_gradient(yTest, scaleTest,  0.0)
+  scaleFitWeibullPG <- gpd_isotonic_scale_projected_gradient(yTest, scaleTest, -0.1)
+  expect_equal(scaleFitFrechetPG$deviance, scaleFitFrechet$deviance)
+  expect_equal(scaleFitGumbelPG$deviance,  scaleFitGumbel$deviance)
+  expect_equal(scaleFitWeibullPG$deviance, scaleFitWeibull$deviance)
+  expect_lt(max(abs(scaleFitFrechetPG$fitted.values - scaleFitFrechet$fitted.values)), 1e-4)
+  expect_lt(max(abs(scaleFitGumbelPG$fitted.values  - scaleFitGumbel$fitted.values)),  1e-4)
+  expect_lt(max(abs(scaleFitWeibullPG$fitted.values - scaleFitWeibull$fitted.values)), 1e-4)
 })
 
 
