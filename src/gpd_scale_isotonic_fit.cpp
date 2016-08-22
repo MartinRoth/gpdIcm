@@ -294,8 +294,8 @@ NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
   return rcpp_seq(from_, to_, by_);
 }
 
-// isotonic_scale_gpd_estimator
-//' Estimation of GPD parameters with fixed shape parameter and non-decreasing
+// FitIsoScaleGPD
+//' Estimation of GPD parameters with constant shape parameter and non-decreasing
 //' scale parameter 
 //'
 //' @inheritParams compute_nll_gpd
@@ -306,7 +306,7 @@ NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
 //' @return isotonic scale parameter estimate and deviance
 //' @export
 //[[Rcpp::export]]
-List isotonic_scale_gpd_estimator (NumericVector y, double min_shape,
+List FitIsoScaleGPD (NumericVector y, double min_shape,
                                    double max_shape, double by = 0.01,
                                    int max_repetitions = 1e+5) {
   
