@@ -18,6 +18,7 @@ using namespace Rcpp;
 //' @param y numeric vector of the data
 //' @param scale numeric vector of the scape parameters
 //' @param shape double 
+//' @export
 // [[Rcpp::export]]
 double compute_nll_gpd(NumericVector y, NumericVector scale, double shape) {
   int ny      = y.length();
@@ -51,6 +52,16 @@ double compute_nll_gpd(NumericVector y, NumericVector scale, double shape) {
 // [[Rcpp::export]]
 double compute_pd1_scale_nll_gpd(double y, double scale, double shape) {
   return ( 1 / scale - (1 + shape) * y / (pow(scale, 2) * (1 + shape * y / scale)));
+}
+
+//' Computes the second partial derivative (scale) of the negative
+//' log likelihood for the GPD
+//' @inheritParams compute_nll_gpd
+// [[Rcpp::export]]
+double compute_pd2_scale_nll_gpd(double y, double scale, double shape) {
+  double dividend = pow(scale - y, 2) - (shape + 1) * pow(y, 2);
+  double divisor  = pow(scale, 2) * pow(scale + shape * y, 2);
+  return dividend / divisor;
 }
 
 

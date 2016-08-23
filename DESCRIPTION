@@ -9,7 +9,10 @@ Description: Methods for isotonic estimation based on projected gradient and
     adapted iterative convex minorant algorithm.
 License: CC BY-NC 4.0
 Imports:
-    Rcpp (>= 0.11.1)
+    Rcpp (>= 0.11.1),
+    fdrtool,
+    foreach,
+    iterators
 LinkingTo: Rcpp
 Suggests:
     testthat,
