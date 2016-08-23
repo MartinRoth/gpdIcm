@@ -152,11 +152,9 @@ NumericVector LineSearchPG (NumericVector y, NumericVector scale, NumericVector 
   NumericVector yy(ny, 0.0);
   NumericVector projection(ny, 0.0);
   
-  do {
-    exponent += 1;
-    yy = scale - pow(beta, exponent) * initial_step * gradient;
-    projection = compute_convex_minorant_of_cumsum(xx, yy);
-  } while (min(projection) < 0); // use make gpd admissible instead
+  exponent += 1;
+  yy = scale - pow(beta, exponent) * initial_step * gradient;
+  projection = MakeScaleAdmissible(compute_convex_minorant_of_cumsum(xx, yy), y, shape);
   
   double scalar = compute_scalar_product(gradient, scale - projection);
   
