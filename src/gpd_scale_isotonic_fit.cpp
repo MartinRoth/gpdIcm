@@ -43,19 +43,17 @@ NumericVector MakeScaleAdmissible(NumericVector scale, NumericVector y, double s
   NumericVector z(clone(scale));
   int           nz = z.length();
   
-  if (shape >= 0) {
-    if (z[0] <= 0 ) {
-      for (int i = 0; i < nz; i++) {
-        if (z[i] <= 0) z[i] = 1e-8;
+  double step = 1e-8;
+  double current = step;
+  
+  for (int i = 0; i < nz; i++) {
+    if (z[i] < current) z[i] = current;
+    else current = z[i];
+    if (shape < 0) {
+      if (z[i] <= -shape * y[i]) {
+        current = -shape * y[i] + step;
+        z[i] = current;
       }
-    }
-  }
-  else {
-    double current_status = 1e-8;
-    for (int i = 0; i < nz; i++) {
-      if (z[i] < current_status) z[i] = current_status;
-      if (z[i] <= -shape * y[i]) z[i] = -shape *y[i]+1e-8;
-      current_status = z[i];
     }
   }
   return z;
@@ -112,7 +110,7 @@ NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shap
    return gradient;
 }
 
-////[[Rcpp::export]]
+//[[Rcpp::export]]
 NumericVector LineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
   // Goldstein-Armijo search for ICM method
   double beta = 0.5;
@@ -226,7 +224,8 @@ List FitIsoScaleFixedICM (NumericVector y, NumericVector start, double shape, in
   double nll = compute_nll_gpd(y, new_scale, shape);
   return List::create(Named("fitted.values") = new_scale,
                       Named("deviance") = 2 * nll,
-                      Named("convergence") = (i < max_repetitions));
+                      Named("convergence") = (i < max_repetitions),
+                      Named("iterations") = i);
 }
 
 
@@ -258,7 +257,8 @@ List FitIsoScaleFixedPG (NumericVector y, NumericVector scale, double shape, int
   double nll = compute_nll_gpd(y, scale_new, shape);
   return List::create(Named("fitted.values") = scale_new,
                       Named("deviance") = 2 * nll,
-                      Named("convergence") = (i < max_repetitions));
+                      Named("convergence") = (i < max_repetitions),
+                      Named("iterations") = i);
 }
 
 struct add_multiple {
