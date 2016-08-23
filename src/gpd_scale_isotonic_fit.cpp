@@ -91,6 +91,7 @@ NumericVector compute_next_icm_gpd(NumericVector y, NumericVector scale, double 
 //  return z;  
 //}
 
+//[[Rcpp::export]]
 double compute_scalar_product (NumericVector a, NumericVector b) {
   int n = a.length();
   double scalar = 0;
@@ -100,6 +101,7 @@ double compute_scalar_product (NumericVector a, NumericVector b) {
   return scalar;
 }
 
+//[[Rcpp::export]]
 NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shape) {
   int           ny = y.length();
   NumericVector gradient(ny);
@@ -108,6 +110,17 @@ NumericVector ComputeGradient (NumericVector y, NumericVector scale, double shap
     gradient[i] = compute_pd1_scale_nll_gpd(y[i], scale[i], shape);
   }
    return gradient;
+}
+
+//[[Rcpp::export]]
+NumericVector ComputeHessianDiagonal (NumericVector y, NumericVector scale, double shape) {
+  int           ny = y.length();
+  NumericVector hesDiag(ny);
+  
+  for (int i = 0; i < ny; i++) {
+    hesDiag[i] = compute_pd2_scale_nll_gpd(y[i], scale[i], shape);
+  }
+  return hesDiag;
 }
 
 //[[Rcpp::export]]

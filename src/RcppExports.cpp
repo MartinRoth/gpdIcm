@@ -18,6 +18,44 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// compute_scalar_product
+double compute_scalar_product(NumericVector a, NumericVector b);
+RcppExport SEXP gpdIcm_compute_scalar_product(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type a(aSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type b(bSEXP);
+    __result = Rcpp::wrap(compute_scalar_product(a, b));
+    return __result;
+END_RCPP
+}
+// ComputeGradient
+NumericVector ComputeGradient(NumericVector y, NumericVector scale, double shape);
+RcppExport SEXP gpdIcm_ComputeGradient(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
+    __result = Rcpp::wrap(ComputeGradient(y, scale, shape));
+    return __result;
+END_RCPP
+}
+// ComputeHessianDiagonal
+NumericVector ComputeHessianDiagonal(NumericVector y, NumericVector scale, double shape);
+RcppExport SEXP gpdIcm_ComputeHessianDiagonal(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
+    __result = Rcpp::wrap(ComputeHessianDiagonal(y, scale, shape));
+    return __result;
+END_RCPP
+}
 // LineSearchICM
 NumericVector LineSearchICM(NumericVector oldScale, NumericVector y, double shape);
 RcppExport SEXP gpdIcm_LineSearchICM(SEXP oldScaleSEXP, SEXP ySEXP, SEXP shapeSEXP) {
@@ -97,6 +135,31 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
     Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
     __result = Rcpp::wrap(compute_pd1_scale_nll_gpd(y, scale, shape));
+    return __result;
+END_RCPP
+}
+// compute_pd2_scale_nll_gpd
+double compute_pd2_scale_nll_gpd(double y, double scale, double shape);
+RcppExport SEXP gpdIcm_compute_pd2_scale_nll_gpd(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type scale(scaleSEXP);
+    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
+    __result = Rcpp::wrap(compute_pd2_scale_nll_gpd(y, scale, shape));
+    return __result;
+END_RCPP
+}
+// convexMinorant
+NumericVector convexMinorant(NumericVector x, NumericVector y);
+RcppExport SEXP gpdIcm_convexMinorant(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    __result = Rcpp::wrap(convexMinorant(x, y));
     return __result;
 END_RCPP
 }

@@ -3,5 +3,6 @@
 
 double compute_nll_gpd(NumericVector y, NumericVector scale, double shape);
 double compute_pd1_scale_nll_gpd(double y, double scale, double shape);
+double compute_pd2_scale_nll_gpd(double y, double scale, double shape);
 
 #endif

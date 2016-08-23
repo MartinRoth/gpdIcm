@@ -10,6 +10,18 @@ MakeScaleAdmissible <- function(scale, y, shape) {
     .Call('gpdIcm_MakeScaleAdmissible', PACKAGE = 'gpdIcm', scale, y, shape)
 }
 
+compute_scalar_product <- function(a, b) {
+    .Call('gpdIcm_compute_scalar_product', PACKAGE = 'gpdIcm', a, b)
+}
+
+ComputeGradient <- function(y, scale, shape) {
+    .Call('gpdIcm_ComputeGradient', PACKAGE = 'gpdIcm', y, scale, shape)
+}
+
+ComputeHessianDiagonal <- function(y, scale, shape) {
+    .Call('gpdIcm_ComputeHessianDiagonal', PACKAGE = 'gpdIcm', y, scale, shape)
+}
+
 LineSearchICM <- function(oldScale, y, shape) {
     .Call('gpdIcm_LineSearchICM', PACKAGE = 'gpdIcm', oldScale, y, shape)
 }
@@ -61,6 +73,7 @@ FitIsoScaleGPD <- function(y, min_shape, max_shape, by = 0.01, max_repetitions =
 #' @param y numeric vector of the data
 #' @param scale numeric vector of the scape parameters
 #' @param shape double 
+#' @export
 compute_nll_gpd <- function(y, scale, shape) {
     .Call('gpdIcm_compute_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
 }
@@ -73,5 +86,19 @@ compute_nll_gpd <- function(y, scale, shape) {
 #' @inheritParams compute_nll_gpd
 compute_pd1_scale_nll_gpd <- function(y, scale, shape) {
     .Call('gpdIcm_compute_pd1_scale_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
+}
+
+#' Computes the second partial derivative (scale) of the negative
+#' log likelihood for the GPD
+#' @inheritParams compute_nll_gpd
+compute_pd2_scale_nll_gpd <- function(y, scale, shape) {
+    .Call('gpdIcm_compute_pd2_scale_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
+}
+
+#' Computes the convex minorant of a polygon.
+#' @param x,y the coordinates of the polygon
+#' @return vector of the y-coordinates of the convex minorant
+convexMinorant <- function(x, y) {
+    .Call('gpdIcm_convexMinorant', PACKAGE = 'gpdIcm', x, y)
 }
 

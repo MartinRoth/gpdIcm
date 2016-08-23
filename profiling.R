@@ -1,5 +1,5 @@
 ## profiling
-
+library(profvis)
 library(microbenchmark)
 
 load("tests/testthat/CETvalues.rda")
@@ -18,3 +18,10 @@ microbenchmark(
   FitIsoScaleFixedICM(yBadTest, startValue,  shapeBadTest),
   FitIsoScaleFixedPG(yBadTest, startValue,  shapeBadTest),
   times = 3)
+
+# profile FitIsoScaleFixedICM2
+
+profvis({
+  library(gpdIcm)
+  FitIsoScaleFixedICM2(yTest, scaleTest,  0.1)
+})
