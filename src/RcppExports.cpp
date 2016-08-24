@@ -110,21 +110,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// FitIsoScaleGPD2
-List FitIsoScaleGPD2(NumericVector y, double min_shape, double max_shape, double by, int max_repetitions);
-RcppExport SEXP gpdIcm_FitIsoScaleGPD2(SEXP ySEXP, SEXP min_shapeSEXP, SEXP max_shapeSEXP, SEXP bySEXP, SEXP max_repetitionsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type min_shape(min_shapeSEXP);
-    Rcpp::traits::input_parameter< double >::type max_shape(max_shapeSEXP);
-    Rcpp::traits::input_parameter< double >::type by(bySEXP);
-    Rcpp::traits::input_parameter< int >::type max_repetitions(max_repetitionsSEXP);
-    __result = Rcpp::wrap(FitIsoScaleGPD2(y, min_shape, max_shape, by, max_repetitions));
-    return __result;
-END_RCPP
-}
 // compute_nll_gpd
 double compute_nll_gpd(NumericVector y, NumericVector scale, double shape);
 RcppExport SEXP gpdIcm_compute_nll_gpd(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP) {

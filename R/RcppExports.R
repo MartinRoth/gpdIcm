@@ -55,19 +55,6 @@ generate_shape_grid <- function(from_, to_, by_ = 0.01) {
     .Call('gpdIcm_generate_shape_grid', PACKAGE = 'gpdIcm', from_, to_, by_)
 }
 
-#' Estimation of GPD parameters with constant shape parameter and non-decreasing
-#' scale parameter 
-#'
-#' @inheritParams compute_nll_gpd
-#' @inheritParams FitIsoScaleFixedICM
-#' @param min_shape double minimum shape value
-#' @param max_shape double maximum shape value
-#' @param by double step size for the profile likelihood 
-#' @return isotonic scale parameter estimate and deviance
-FitIsoScaleGPD2 <- function(y, min_shape, max_shape, by = 0.01, max_repetitions = 1e+5L) {
-    .Call('gpdIcm_FitIsoScaleGPD2', PACKAGE = 'gpdIcm', y, min_shape, max_shape, by, max_repetitions)
-}
-
 #' Computes the negative log likelihood for the GPD
 #' 
 #' No threshold parameter

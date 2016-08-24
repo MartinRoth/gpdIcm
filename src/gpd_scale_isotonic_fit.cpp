@@ -306,68 +306,68 @@ NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
   return rcpp_seq(from_, to_, by_);
 }
 
-// FitIsoScaleGPD
-//' Estimation of GPD parameters with constant shape parameter and non-decreasing
-//' scale parameter 
-//'
-//' @inheritParams compute_nll_gpd
-//' @inheritParams FitIsoScaleFixedICM
-//' @param min_shape double minimum shape value
-//' @param max_shape double maximum shape value
-//' @param by double step size for the profile likelihood 
-//' @return isotonic scale parameter estimate and deviance
-//[[Rcpp::export]]
-List FitIsoScaleGPD2 (NumericVector y, double min_shape,
-                                   double max_shape, double by = 0.01,
-                                   int max_repetitions = 1e+5) {
-  
-  // NumericVector xi = shape;
-  NumericVector xi = generate_shape_grid(min_shape, max_shape, by);
-  int           ny = y.length();
-  int           nxi = xi.length();
-  NumericVector xx(ny, 1.0);
-  NumericVector log_likelihood(nxi);
-  Rcpp::List    z;
-  Rcpp::List    z_best;
-  double        best_shape;
-  double        max_log_likelihood;
-  NumericVector isoReg = compute_convex_minorant_of_cumsum(xx, y);
-  NumericVector startValue = isoReg;
-  
-  int posZero = which_min(abs(xi));
-  
-  z_best             = FitIsoScaleFixedICM2(y, startValue, xi[posZero], max_repetitions); 
-  best_shape         = xi[posZero];
-  log_likelihood[posZero]  = -(float)z_best["deviance"]/2.0;
-  max_log_likelihood = log_likelihood[posZero];
-  
-  for(int i = posZero + 1; i < nxi; i++) {
-    z = FitIsoScaleFixedICM2(y, startValue, xi[i], max_repetitions);
-    log_likelihood[i] = -(float)z["deviance"] / 2.0;
-    startValue = z["fitted.values"];
-    if (log_likelihood[i] > max_log_likelihood) {
-      z_best = z;
-      best_shape = xi[i];
-      max_log_likelihood = log_likelihood[i];
-    }
-  }
-  
-  startValue = isoReg;
-  
-  for(int i = posZero - 1; i >= 0; i--) {
-    z = FitIsoScaleFixedICM2(y, startValue, xi[i], max_repetitions);
-    log_likelihood[i] = -(float)z["deviance"]/2.0;
-    startValue = z["fitted.values"];
-    if (log_likelihood[i] > max_log_likelihood) {
-      z_best = z;
-      best_shape = xi[i];
-      max_log_likelihood = log_likelihood[i];
-    }
-  }
-  
-  return List::create(Named("scale") = z_best["fitted.values"], 
-    Named("shape") = best_shape, 
-    Named("deviance") = z_best["deviance"],
-    Named("convergence") = z_best["convergence"]);
-    // Named("posZero") = posZero);
-}
+// // FitIsoScaleGPD
+// //' Estimation of GPD parameters with constant shape parameter and non-decreasing
+// //' scale parameter 
+// //'
+// //' @inheritParams compute_nll_gpd
+// //' @inheritParams FitIsoScaleFixedICM
+// //' @param min_shape double minimum shape value
+// //' @param max_shape double maximum shape value
+// //' @param by double step size for the profile likelihood 
+// //' @return isotonic scale parameter estimate and deviance
+// //[[Rcpp::export]]
+// List FitIsoScaleGPD2 (NumericVector y, double min_shape,
+//                                    double max_shape, double by = 0.01,
+//                                    int max_repetitions = 1e+5) {
+//   
+//   // NumericVector xi = shape;
+//   NumericVector xi = generate_shape_grid(min_shape, max_shape, by);
+//   int           ny = y.length();
+//   int           nxi = xi.length();
+//   NumericVector xx(ny, 1.0);
+//   NumericVector log_likelihood(nxi);
+//   Rcpp::List    z;
+//   Rcpp::List    z_best;
+//   double        best_shape;
+//   double        max_log_likelihood;
+//   NumericVector isoReg = compute_convex_minorant_of_cumsum(xx, y);
+//   NumericVector startValue = isoReg;
+//   
+//   int posZero = which_min(abs(xi));
+//   
+//   z_best             = FitIsoScaleFixedICM2(y, startValue, xi[posZero], max_repetitions); 
+//   best_shape         = xi[posZero];
+//   log_likelihood[posZero]  = -(float)z_best["deviance"]/2.0;
+//   max_log_likelihood = log_likelihood[posZero];
+//   
+//   for(int i = posZero + 1; i < nxi; i++) {
+//     z = FitIsoScaleFixedICM2(y, startValue, xi[i], max_repetitions);
+//     log_likelihood[i] = -(float)z["deviance"] / 2.0;
+//     startValue = z["fitted.values"];
+//     if (log_likelihood[i] > max_log_likelihood) {
+//       z_best = z;
+//       best_shape = xi[i];
+//       max_log_likelihood = log_likelihood[i];
+//     }
+//   }
+//   
+//   startValue = isoReg;
+//   
+//   for(int i = posZero - 1; i >= 0; i--) {
+//     z = FitIsoScaleFixedICM2(y, startValue, xi[i], max_repetitions);
+//     log_likelihood[i] = -(float)z["deviance"]/2.0;
+//     startValue = z["fitted.values"];
+//     if (log_likelihood[i] > max_log_likelihood) {
+//       z_best = z;
+//       best_shape = xi[i];
+//       max_log_likelihood = log_likelihood[i];
+//     }
+//   }
+//   
+//   return List::create(Named("scale") = z_best["fitted.values"], 
+//     Named("shape") = best_shape, 
+//     Named("deviance") = z_best["deviance"],
+//     Named("convergence") = z_best["convergence"]);
+//     // Named("posZero") = posZero);
+// }
