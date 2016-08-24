@@ -56,33 +56,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// LineSearchICM
-NumericVector LineSearchICM(NumericVector oldScale, NumericVector y, double shape);
-RcppExport SEXP gpdIcm_LineSearchICM(SEXP oldScaleSEXP, SEXP ySEXP, SEXP shapeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericVector >::type oldScale(oldScaleSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
-    __result = Rcpp::wrap(LineSearchICM(oldScale, y, shape));
-    return __result;
-END_RCPP
-}
-// FitIsoScaleFixedICM2
-List FitIsoScaleFixedICM2(NumericVector y, NumericVector start, double shape, int max_repetitions);
-RcppExport SEXP gpdIcm_FitIsoScaleFixedICM2(SEXP ySEXP, SEXP startSEXP, SEXP shapeSEXP, SEXP max_repetitionsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type start(startSEXP);
-    Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
-    Rcpp::traits::input_parameter< int >::type max_repetitions(max_repetitionsSEXP);
-    __result = Rcpp::wrap(FitIsoScaleFixedICM2(y, start, shape, max_repetitions));
-    return __result;
-END_RCPP
-}
 // FitIsoScaleFixedPG
 List FitIsoScaleFixedPG(NumericVector y, NumericVector scale, double shape, int max_repetitions);
 RcppExport SEXP gpdIcm_FitIsoScaleFixedPG(SEXP ySEXP, SEXP scaleSEXP, SEXP shapeSEXP, SEXP max_repetitionsSEXP) {

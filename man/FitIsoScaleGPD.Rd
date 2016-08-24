@@ -16,7 +16,7 @@ FitIsoScaleGPD(y, min_shape, max_shape, by = 0.01, max_repetitions = 1e+05)
 
 \item{by}{double step size for the profile likelihood}
 
-\item{max_repetitions}{Maximal number of repetitions}
+\item{max_repetitions}{Integer}
 }
 \value{
 isotonic scale parameter estimate and deviance
