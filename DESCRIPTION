@@ -17,6 +17,7 @@ Suggests:
     knitr,
     rmarkdown,
     evd,
-    covr
+    covr,
+    fdrtool
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
