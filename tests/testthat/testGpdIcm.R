@@ -108,4 +108,5 @@ test_that("Convergence fails", {
  tmp3 <- FitIsoScaleFixedICM2(yBadTest, startValue,  shapeBadTest)
  expect_false(tmp1$convergence)
  expect_false(tmp2$convergence)
+ expect_true(tmp3$convergence)
 })
