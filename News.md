@@ -1,7 +1,7 @@
 # gpdIcm 0.0.1.3
 
 Attention: Introduces a new name scheme.
-* introduces weighted (or more standard) ICM
+* introduces weighted (or more standard) ICM (R implementations)
 * more testing 
 
 # gpdIcm 0.0.1.2

@@ -11,7 +11,8 @@ License: CC BY-NC 4.0
 Imports:
     Rcpp (>= 0.11.1),
     fdrtool,
-    purrr
+    purrr,
+    stats
 LinkingTo: Rcpp
 Suggests:
     testthat,

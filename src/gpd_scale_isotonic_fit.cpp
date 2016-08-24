@@ -213,7 +213,7 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //' @importFrom Rcpp evalCpp
 //' @export
 //[[Rcpp::export]]
-List FitIsoScaleFixedICM (NumericVector y, NumericVector start, double shape, int max_repetitions = 1e+5) {
+List FitIsoScaleFixedICM2 (NumericVector y, NumericVector start, double shape, int max_repetitions = 1e+5) {
 
   start = MakeScaleAdmissible(start, y, shape);
   
@@ -298,6 +298,7 @@ NumericVector rcpp_seq(double from_, double to_, double by_ = 1.0) {
   return Rcpp::NumericVector(res) / adjust;
 }
 
+//[[Rcpp::export]]
 NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
   if (from_ >= 0 || to_ <= 0) {
     stop("Zero should be included in the interval");
@@ -315,9 +316,8 @@ NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
 //' @param max_shape double maximum shape value
 //' @param by double step size for the profile likelihood 
 //' @return isotonic scale parameter estimate and deviance
-//' @export
 //[[Rcpp::export]]
-List FitIsoScaleGPD (NumericVector y, double min_shape,
+List FitIsoScaleGPD2 (NumericVector y, double min_shape,
                                    double max_shape, double by = 0.01,
                                    int max_repetitions = 1e+5) {
   
@@ -336,13 +336,13 @@ List FitIsoScaleGPD (NumericVector y, double min_shape,
   
   int posZero = which_min(abs(xi));
   
-  z_best             = FitIsoScaleFixedICM(y, startValue, xi[posZero], max_repetitions); 
+  z_best             = FitIsoScaleFixedICM2(y, startValue, xi[posZero], max_repetitions); 
   best_shape         = xi[posZero];
   log_likelihood[posZero]  = -(float)z_best["deviance"]/2.0;
   max_log_likelihood = log_likelihood[posZero];
   
   for(int i = posZero + 1; i < nxi; i++) {
-    z = FitIsoScaleFixedICM(y, startValue, xi[i], max_repetitions);
+    z = FitIsoScaleFixedICM2(y, startValue, xi[i], max_repetitions);
     log_likelihood[i] = -(float)z["deviance"] / 2.0;
     startValue = z["fitted.values"];
     if (log_likelihood[i] > max_log_likelihood) {
@@ -355,7 +355,7 @@ List FitIsoScaleGPD (NumericVector y, double min_shape,
   startValue = isoReg;
   
   for(int i = posZero - 1; i >= 0; i--) {
-    z = FitIsoScaleFixedICM(y, startValue, xi[i], max_repetitions);
+    z = FitIsoScaleFixedICM2(y, startValue, xi[i], max_repetitions);
     log_likelihood[i] = -(float)z["deviance"]/2.0;
     startValue = z["fitted.values"];
     if (log_likelihood[i] > max_log_likelihood) {
