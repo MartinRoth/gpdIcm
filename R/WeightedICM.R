@@ -1,4 +1,4 @@
-LineSearchICM2 <- function(y, start, direction, gradient, shape) {
+LineSearchICM <- function(y, start, direction, gradient, shape) {
   beta        <- 0.5
   step        <- 1.0
   mu          <- 1e-4
@@ -35,7 +35,7 @@ FitIsoScaleICMStep <- function(y, start, shape) {
   direction <- projection - start
   
   
-  LineSearchICM2(y, start, direction, gradient, shape)
+  LineSearchICM(y, start, direction, gradient, shape)
 }
   
 
@@ -74,7 +74,7 @@ FitIsoScaleFixedICM <- function (y, start, shape, max_repetitions = 1e+5) {
 #' @param min_shape double minimum shape value
 #' @param max_shape double maximum shape value
 #' @param by double step size for the profile likelihood
-#' @inheritParams FitIsoScaleFixedICM2 
+#' @param max_repetitions Integer 
 #' @return isotonic scale parameter estimate and deviance
 #' @importFrom stats isoreg
 #' @export

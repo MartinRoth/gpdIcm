@@ -38,6 +38,8 @@ NumericVector compute_convex_minorant_of_cumsum(NumericVector x, NumericVector y
 //'
 //' @inheritParams compute_nll_gpd
 //' @return isotonic scale parameter that does not violate the GPD constraint
+//' @useDynLib gpdIcm
+//' @importFrom Rcpp evalCpp
 //[[Rcpp::export]]
 NumericVector MakeScaleAdmissible(NumericVector scale, NumericVector y, double shape) {
   NumericVector z(clone(scale));
@@ -69,27 +71,6 @@ NumericVector compute_next_icm_gpd(NumericVector y, NumericVector scale, double 
   }
   return compute_convex_minorant_of_cumsum(xx, yy);
 }
-
-//// search_line_icm_gpd
-////[[Rcpp::export]]
-//NumericVector search_line_icm_gpd(NumericVector y, NumericVector old_scale, NumericVector tmp_scale,
-//    double shape, double value) {
-//  
-//  double        t        = 1.0;
-//  NumericVector z        = old_scale + t * (tmp_scale - old_scale); 
-//  z                      = MakeScaleAdmissible(z, y, shape);
-//  double        newValue = compute_nll_gpd(y, z, shape);
-//
-//  int i = 0;
-//  while (newValue > value && i < 30) {
-//    i++;
-//    t /= 2;
-//    z = old_scale + t * (tmp_scale - old_scale);
-//    z = MakeScaleAdmissible(z, y, shape);
-//    newValue = compute_nll_gpd(y, z, shape);
-//  }
-//  return z;  
-//}
 
 //[[Rcpp::export]]
 double compute_scalar_product (NumericVector a, NumericVector b) {
@@ -123,32 +104,6 @@ NumericVector ComputeHessianDiagonal (NumericVector y, NumericVector scale, doub
   return hesDiag;
 }
 
-//[[Rcpp::export]]
-NumericVector LineSearchICM (NumericVector oldScale, NumericVector y, double shape) {
-  // Goldstein-Armijo search for ICM method
-  double beta = 0.5;
-  double step = 1.0;
-  double mu = 1e-4;
-  int    e = 0;
-  int    maxExponent = 25;
-  double a = step;
-  
-  NumericVector gradient = ComputeGradient(y, oldScale, shape); 
-  
-  double nllOld = compute_nll_gpd(y, oldScale, shape);
-  NumericVector direction = compute_next_icm_gpd(y, oldScale, shape) - oldScale;
-  NumericVector newScale = MakeScaleAdmissible(oldScale + a * direction, y, shape);
-  double nllNew = compute_nll_gpd(y, newScale, shape);
-  double scalar = compute_scalar_product(gradient, oldScale - newScale);
-  while ( (e < maxExponent) && (nllOld - nllNew < mu * scalar)) {
-    e += 1;
-    a *= beta;
-    newScale = MakeScaleAdmissible(oldScale + a * direction, y, shape);
-    nllNew = compute_nll_gpd(y, newScale, shape);
-    scalar = compute_scalar_product(gradient, oldScale - newScale);
-  }
-  return newScale;
-}
 
 // LineSearchPG
 NumericVector LineSearchPG (NumericVector y, NumericVector scale, NumericVector gradient, double shape, double ll) {
@@ -201,44 +156,6 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
   
   return LineSearchPG(y, scale, gradient, shape, ll);
 }
-
-// FitIsoScaleFixedICM
-//' Isotonic estimation (using an adapted version of the ICM algorithm)
-//'
-//' @return isotonic scale parameter estimate and deviance
-//' @inheritParams compute_nll_gpd
-//' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
-//' @param max_repetitions Maximal number of repetitions
-//' @useDynLib gpdIcm
-//' @importFrom Rcpp evalCpp
-//' @export
-//[[Rcpp::export]]
-List FitIsoScaleFixedICM2 (NumericVector y, NumericVector start, double shape, int max_repetitions = 1e+5) {
-
-  start = MakeScaleAdmissible(start, y, shape);
-  
-  double        value     = compute_nll_gpd(y, start, shape);
-  NumericVector scale     = start;
-  NumericVector new_scale = LineSearchICM(start, y, shape);
-  double        new_value = compute_nll_gpd(y, new_scale, shape);
-  
-  
-  int i = 0;
-  while ((value - new_value > 1e-6 || max(abs(scale - new_scale)) > 1e-6) && i < max_repetitions) {
-    i++;
-    value     = new_value;
-    scale     = new_scale;
-    new_scale = LineSearchICM(new_scale, y, shape); 
-    new_value = compute_nll_gpd(y, new_scale, shape);
-  }
-  
-  double nll = compute_nll_gpd(y, new_scale, shape);
-  return List::create(Named("fitted.values") = new_scale,
-                      Named("deviance") = 2 * nll,
-                      Named("convergence") = (i < max_repetitions),
-                      Named("iterations") = i);
-}
-
 
 // FitIsoScaleFixedPG
 //' Isotonic estimation (using a projected gradient method)
@@ -305,69 +222,3 @@ NumericVector generate_shape_grid(double from_, double to_, double by_ = 0.01) {
   }
   return rcpp_seq(from_, to_, by_);
 }
-
-// // FitIsoScaleGPD
-// //' Estimation of GPD parameters with constant shape parameter and non-decreasing
-// //' scale parameter 
-// //'
-// //' @inheritParams compute_nll_gpd
-// //' @inheritParams FitIsoScaleFixedICM
-// //' @param min_shape double minimum shape value
-// //' @param max_shape double maximum shape value
-// //' @param by double step size for the profile likelihood 
-// //' @return isotonic scale parameter estimate and deviance
-// //[[Rcpp::export]]
-// List FitIsoScaleGPD2 (NumericVector y, double min_shape,
-//                                    double max_shape, double by = 0.01,
-//                                    int max_repetitions = 1e+5) {
-//   
-//   // NumericVector xi = shape;
-//   NumericVector xi = generate_shape_grid(min_shape, max_shape, by);
-//   int           ny = y.length();
-//   int           nxi = xi.length();
-//   NumericVector xx(ny, 1.0);
-//   NumericVector log_likelihood(nxi);
-//   Rcpp::List    z;
-//   Rcpp::List    z_best;
-//   double        best_shape;
-//   double        max_log_likelihood;
-//   NumericVector isoReg = compute_convex_minorant_of_cumsum(xx, y);
-//   NumericVector startValue = isoReg;
-//   
-//   int posZero = which_min(abs(xi));
-//   
-//   z_best             = FitIsoScaleFixedICM2(y, startValue, xi[posZero], max_repetitions); 
-//   best_shape         = xi[posZero];
-//   log_likelihood[posZero]  = -(float)z_best["deviance"]/2.0;
-//   max_log_likelihood = log_likelihood[posZero];
-//   
-//   for(int i = posZero + 1; i < nxi; i++) {
-//     z = FitIsoScaleFixedICM2(y, startValue, xi[i], max_repetitions);
-//     log_likelihood[i] = -(float)z["deviance"] / 2.0;
-//     startValue = z["fitted.values"];
-//     if (log_likelihood[i] > max_log_likelihood) {
-//       z_best = z;
-//       best_shape = xi[i];
-//       max_log_likelihood = log_likelihood[i];
-//     }
-//   }
-//   
-//   startValue = isoReg;
-//   
-//   for(int i = posZero - 1; i >= 0; i--) {
-//     z = FitIsoScaleFixedICM2(y, startValue, xi[i], max_repetitions);
-//     log_likelihood[i] = -(float)z["deviance"]/2.0;
-//     startValue = z["fitted.values"];
-//     if (log_likelihood[i] > max_log_likelihood) {
-//       z_best = z;
-//       best_shape = xi[i];
-//       max_log_likelihood = log_likelihood[i];
-//     }
-//   }
-//   
-//   return List::create(Named("scale") = z_best["fitted.values"], 
-//     Named("shape") = best_shape, 
-//     Named("deviance") = z_best["deviance"],
-//     Named("convergence") = z_best["convergence"]);
-//     // Named("posZero") = posZero);
-// }

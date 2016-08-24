@@ -78,15 +78,6 @@ test_that("GPD scale isotonic fit", {
   expect_lt(max(abs(scaleFitFrechetPG$fitted.values - scaleFitFrechet$fitted.values)), 1e-4)
   expect_lt(max(abs(scaleFitGumbelPG$fitted.values  - scaleFitGumbel$fitted.values)),  1e-4)
   expect_lt(max(abs(scaleFitWeibullPG$fitted.values - scaleFitWeibull$fitted.values)), 1e-4)
-  scaleFitFrechetICM2 <- FitIsoScaleFixedICM2(yTest, scaleTest,  0.1)
-  # scaleFitGumbelICM2  <- FitIsoScaleFixedICM2(yTest, scaleTest,  0.0)
-  # scaleFitWeibullICM2 <- FitIsoScaleFixedICM2(yTest, scaleTest, -0.1)
-  expect_equal(scaleFitFrechetICM2$deviance, scaleFitFrechet$deviance, tolerance = 1e-6)
-  # expect_equal(scaleFitGumbelICM2$deviance,  scaleFitGumbel$deviance, tolerance = 1e-6)
-  # expect_equal(scaleFitWeibullICM2$deviance, scaleFitWeibull$deviance, tolerance = 1e-6)
-  # expect_lt(max(abs(scaleFitFrechetICM2$fitted.values - scaleFitFrechet$fitted.values)), 1e-4)
-  # expect_lt(max(abs(scaleFitGumbelICM2$fitted.values  - scaleFitGumbel$fitted.values)),  1e-4)
-  # expect_lt(max(abs(scaleFitWeibullICM2$fitted.values - scaleFitWeibull$fitted.values)), 1e-4)
 })
 
 
@@ -105,8 +96,6 @@ test_that("Convergence fails", {
  startValue <-  isoreg(yBadTest)$yf
  tmp1 <- FitIsoScaleFixedICM(yBadTest, startValue,  shapeBadTest)
  #tmp2 <- FitIsoScaleFixedPG(yBadTest, startValue, shapeBadTest)
- #tmp3 <- FitIsoScaleFixedICM2(yBadTest, startValue,  shapeBadTest)
  expect_true(tmp1$convergence)
  #expect_false(tmp2$convergence)
- #expect_false(tmp3$convergence)
 })

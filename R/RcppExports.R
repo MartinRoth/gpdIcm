@@ -6,6 +6,8 @@
 #'
 #' @inheritParams compute_nll_gpd
 #' @return isotonic scale parameter that does not violate the GPD constraint
+#' @useDynLib gpdIcm
+#' @importFrom Rcpp evalCpp
 MakeScaleAdmissible <- function(scale, y, shape) {
     .Call('gpdIcm_MakeScaleAdmissible', PACKAGE = 'gpdIcm', scale, y, shape)
 }
@@ -20,23 +22,6 @@ ComputeGradient <- function(y, scale, shape) {
 
 ComputeHessianDiagonal <- function(y, scale, shape) {
     .Call('gpdIcm_ComputeHessianDiagonal', PACKAGE = 'gpdIcm', y, scale, shape)
-}
-
-LineSearchICM <- function(oldScale, y, shape) {
-    .Call('gpdIcm_LineSearchICM', PACKAGE = 'gpdIcm', oldScale, y, shape)
-}
-
-#' Isotonic estimation (using an adapted version of the ICM algorithm)
-#'
-#' @return isotonic scale parameter estimate and deviance
-#' @inheritParams compute_nll_gpd
-#' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
-#' @param max_repetitions Maximal number of repetitions
-#' @useDynLib gpdIcm
-#' @importFrom Rcpp evalCpp
-#' @export
-FitIsoScaleFixedICM2 <- function(y, start, shape, max_repetitions = 1e+5L) {
-    .Call('gpdIcm_FitIsoScaleFixedICM2', PACKAGE = 'gpdIcm', y, start, shape, max_repetitions)
 }
 
 #' Isotonic estimation (using a projected gradient method)
