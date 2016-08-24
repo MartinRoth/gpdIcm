@@ -1,48 +1,3 @@
-#' Left GreatestConvexMinorant
-#' @param x Vector of x values
-#' @param y Vector of y values
-#' @export
-#' @importFrom fdrtool gcmlcm
-LeftDerivativeGCM <- function(x, y) {
-  fit <- gcmlcm(x, y)
-  LeftDerivative(x[-1], fit)
-}
-
-#' @importFrom purrr map_int
-LeftDerivative <- function(x, fit) {
-  knotsCount <- length(fit$x.knots)
-  knotsIndex <- 1 : knotsCount
-  fn <- function(x) {
-    as.integer(max(knotsIndex[!fit$x.knots >= x]))
-  }
-  index <- map_int(x, fn) 
-  return(fit$slope.knots[index])
-}
-
-# double beta = 0.5;
-# double step = 1.0;
-# double mu = 1e-4;
-# int    e = 0;
-# int    maxExponent = 25;
-# double a = step;
-# 
-# NumericVector gradient = ComputeGradient(y, oldScale, shape); 
-# 
-# double nllOld = compute_nll_gpd(y, oldScale, shape);
-# NumericVector direction = compute_next_icm_gpd(y, oldScale, shape) - oldScale;
-# NumericVector newScale = MakeScaleAdmissible(oldScale + a * direction, y, shape);
-# double nllNew = compute_nll_gpd(y, newScale, shape);
-# double scalar = compute_scalar_product(gradient, oldScale - newScale);
-# while ( (e < maxExponent) && (nllOld - nllNew < mu * scalar)) {
-#   e += 1;
-#   a *= beta;
-#   newScale = MakeScaleAdmissible(oldScale + a * direction, y, shape);
-#   nllNew = compute_nll_gpd(y, newScale, shape);
-#   scalar = compute_scalar_product(gradient, oldScale - newScale);
-# }
-# return newScale;
-
-#' @importFrom purrr map_dbl
 LineSearchICM2 <- function(y, start, direction, gradient, shape) {
   beta        <- 0.5
   step        <- 1.0
@@ -65,38 +20,20 @@ LineSearchICM2 <- function(y, start, direction, gradient, shape) {
   }
   
   return(list(scale = newScale, deviance = 2 * newNll))
-  # alphas <- sort(c(seq(0.1, 1, by = 0.1), 5/10^(c(1:25)), 1/10^(c(2:25))),
-  #                decreasing= TRUE)
-  # 
-  # fn <- function(alpha) {
-  #   tmp_scale = MakeScaleAdmissible(start + alpha * direction, y, shape)
-  #   compute_nll_gpd(y, tmp_scale, shape)
-  # }
-  # nll <- map_dbl(alphas, fn)
-  # 
-  # minIndex <- which.min(nll)
-  # newScale <- MakeScaleAdmissible(start + alphas[minIndex] * direction,
-  #                                          y, shape)
-  # return(list(scale = newScale, deviance = 2 * nll[minIndex]))
 }
 
-#' @importFrom fdrtool gcmlcm
-FitIsoScaleICMStep2 <- function(y, start, shape) {
+FitIsoScaleICMStep <- function(y, start, shape) {
   gradient <- ComputeGradient(y, start, shape)
   hesDiag  <- ComputeHessianDiagonal(y, start, shape)
   
-  #posSubset           <- hesDiag > 0
-  #negativeWeights     <- -mean(hesDiag[!posSubset])
-  #hesDiag[!posSubset] <-  - hesDiag[!posSubset] # negativeWeights #
-  #hesDiag <- rep(1, length(hesDiag))
-  hesDiag[hesDiag < 0]    <- -hesDiag[hesDiag < 0]
-  hesDiag[hesDiag < 1e-6] <- 1e-6
+  hesDiag[hesDiag < 0] <- -hesDiag[hesDiag < 0]
   
   points     <- cbind(c(0, cumsum(hesDiag)),
                       c(0, cumsum(start * hesDiag - gradient)))
-  projection <- LeftDerivativeGCM(points[,1], points[, 2])
+  projection <- GreatestConvexMinorant(points[,1], points[, 2])$left.derivative
   
   direction <- projection - start
+  
   
   LineSearchICM2(y, start, direction, gradient, shape)
 }
@@ -109,19 +46,19 @@ FitIsoScaleICMStep2 <- function(y, start, shape) {
 #' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
 #' @param max_repetitions Maximal number of repetitions
 #' @export
-FitIsoScaleFixedICM2 <- function (y, start, shape, max_repetitions = 1e+5) {
+FitIsoScaleFixedICM <- function (y, start, shape, max_repetitions = 1e+5) {
   
   scale <- MakeScaleAdmissible(start, y, shape)
   value <- compute_nll_gpd(y, scale, shape) * 2
   
-  nextIterate <- FitIsoScaleICMStep2(y, scale, shape)
-  
+  nextIterate <- FitIsoScaleICMStep(y, scale, shape)
+   
   i <- 0;
   while ((value - nextIterate$deviance > 1e-6 || max(abs(scale - nextIterate$scale)) > 1e-6) && i < max_repetitions) {
     i = i + 1
     scale <- nextIterate$scale
     value <- nextIterate$deviance
-    nextIterate <- FitIsoScaleICMStep2(y, scale, shape)
+    nextIterate <- FitIsoScaleICMStep(y, scale, shape)
   }
   
   list(fitted.values = scale, 
@@ -130,4 +67,64 @@ FitIsoScaleFixedICM2 <- function (y, start, shape, max_repetitions = 1e+5) {
        iterations = i);
 }
 
+# FitIsoScaleGPD
+#' Estimation of GPD parameters with constant shape parameter and non-decreasing
+#' scale parameter 
+#'
+#' @param y input data
+#' @param min_shape double minimum shape value
+#' @param max_shape double maximum shape value
+#' @param by double step size for the profile likelihood
+#' @inheritParams FitIsoScaleFixedICM2 
+#' @return isotonic scale parameter estimate and deviance
+#' @importFrom stats isoreg
+#' @export
+FitIsoScaleGPD <- function(y, min_shape, max_shape,by = 0.01,
+                           max_repetitions = 1e+5) {
+  
+  xi         <- generate_shape_grid(min_shape, max_shape, by)
+  ny         <- length(y)
+  nxi        <- length(xi)
+  deviance   <- numeric(nxi)
+  isoReg     <- isoreg(y)$yf
+  startValue <- isoReg;
+  
+  posZero = which.min(abs(xi))
+  
+  z_best            <- FitIsoScaleFixedICM(y, startValue, xi[posZero], max_repetitions)
+  best_shape        <- xi[posZero]
+  deviance[posZero] <- z_best$deviance
+  min_deviance      <- deviance[posZero]
+  
+  for(i in (posZero + 1) : nxi) {
+    z           <- FitIsoScaleFixedICM(y, startValue, xi[i], max_repetitions)
+    deviance[i] <- z$deviance
+    startValue  <- z$fitted.values;
+    if (deviance[i] < min_deviance) {
+      z_best       = z
+      best_shape   = xi[i]
+      min_deviance = deviance[i]
+    }
+    i <- i + 1
+  }
+  
+  startValue = isoReg;
+  
+  for(i in (posZero - 1) : 1) {
+    z           <- FitIsoScaleFixedICM(y, startValue, xi[i], max_repetitions)
+    deviance[i] <- z$deviance
+    startValue  <- z$fitted.values;
+    if (deviance[i] < min_deviance) {
+      z_best       = z
+      best_shape   = xi[i]
+      min_deviance = deviance[i]
+    }
+    i <- i + 1
+  }
+  
+  list(scale = z_best$fitted.values, 
+       shape = best_shape, 
+       deviance = z_best$deviance,
+       convergence = z_best$convergence)
+}
 

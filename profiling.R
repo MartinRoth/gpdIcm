@@ -23,5 +23,5 @@ microbenchmark(
 
 profvis({
   library(gpdIcm)
-  FitIsoScaleFixedICM2(yTest, scaleTest,  0.1)
+  FitIsoScaleFixedICM(yTest, scaleTest,  0.1)
 })

@@ -58,5 +58,51 @@ NumericVector convexMinorant(NumericVector x, NumericVector y) {
   NumericVector XYY     = Rcpp::wrap(convHullY);
   NumericVector slopes  = compute_slopes(XXX, XYY);
   return slopes;
-  //return List::create(Named("slopes") = newBeta, Named("x") = XXX, Named("y") = XYY);
+  //return List::create(Named("slopes") = slopes, Named("x") = XXX, Named("y") = XYY);
+}
+
+//' Computes the convex minorant of a vector.
+//' @param x,y Vector of x and y values
+//' @return x.knots, y.knots, y.slopes and the left derivative at all x values
+//' @export
+//[[Rcpp::export]]
+List GreatestConvexMinorant(NumericVector x, NumericVector y) {
+  
+  int ny = y.length();
+  
+  NumericVector XX = x; 
+  NumericVector XY = y; 
+  NumericVector leftDerivative(ny - 1);
+  
+  vector<Point> P(ny);
+  for (int i = 0; i < ny; i++) {
+    P[i].x = XX[i];
+    P[i].y = XY[i];
+  }
+  
+  vector<Point> convHull = convex_hull(P);
+  
+  int            nP = convHull.size();
+  vector<double> convHullX(nP); 
+  vector<double> convHullY(nP); 
+  for (int i = 0; i < nP; i++) {
+    convHullX[i] = convHull.at(i).x;
+    convHullY[i] = convHull.at(i).y;
+  }
+  
+  NumericVector XXX     = Rcpp::wrap(convHullX); // correct
+  NumericVector XYY     = Rcpp::wrap(convHullY); // correct
+  NumericVector Slopes  = diff(XYY) / diff(XXX); // has to be corrected
+  //return slopes;
+  
+  for (int i = 0; i < ny-1; i++) {
+    for (int j = 0; j < nP; j++) {
+      if (XXX[j] < XX[i+1]) leftDerivative[i] = Slopes[j]; 
+    }
+  }
+  
+  return List::create(Named("y.slopes") = Slopes,
+                      Named("x.knots") = XXX,
+                      Named("y.knots") = XYY,
+                      Named("left.derivative") = leftDerivative);
 }

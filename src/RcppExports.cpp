@@ -69,9 +69,9 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// FitIsoScaleFixedICM
-List FitIsoScaleFixedICM(NumericVector y, NumericVector start, double shape, int max_repetitions);
-RcppExport SEXP gpdIcm_FitIsoScaleFixedICM(SEXP ySEXP, SEXP startSEXP, SEXP shapeSEXP, SEXP max_repetitionsSEXP) {
+// FitIsoScaleFixedICM2
+List FitIsoScaleFixedICM2(NumericVector y, NumericVector start, double shape, int max_repetitions);
+RcppExport SEXP gpdIcm_FitIsoScaleFixedICM2(SEXP ySEXP, SEXP startSEXP, SEXP shapeSEXP, SEXP max_repetitionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -79,7 +79,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type start(startSEXP);
     Rcpp::traits::input_parameter< double >::type shape(shapeSEXP);
     Rcpp::traits::input_parameter< int >::type max_repetitions(max_repetitionsSEXP);
-    __result = Rcpp::wrap(FitIsoScaleFixedICM(y, start, shape, max_repetitions));
+    __result = Rcpp::wrap(FitIsoScaleFixedICM2(y, start, shape, max_repetitions));
     return __result;
 END_RCPP
 }
@@ -97,9 +97,22 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// FitIsoScaleGPD
-List FitIsoScaleGPD(NumericVector y, double min_shape, double max_shape, double by, int max_repetitions);
-RcppExport SEXP gpdIcm_FitIsoScaleGPD(SEXP ySEXP, SEXP min_shapeSEXP, SEXP max_shapeSEXP, SEXP bySEXP, SEXP max_repetitionsSEXP) {
+// generate_shape_grid
+NumericVector generate_shape_grid(double from_, double to_, double by_);
+RcppExport SEXP gpdIcm_generate_shape_grid(SEXP from_SEXP, SEXP to_SEXP, SEXP by_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type from_(from_SEXP);
+    Rcpp::traits::input_parameter< double >::type to_(to_SEXP);
+    Rcpp::traits::input_parameter< double >::type by_(by_SEXP);
+    __result = Rcpp::wrap(generate_shape_grid(from_, to_, by_));
+    return __result;
+END_RCPP
+}
+// FitIsoScaleGPD2
+List FitIsoScaleGPD2(NumericVector y, double min_shape, double max_shape, double by, int max_repetitions);
+RcppExport SEXP gpdIcm_FitIsoScaleGPD2(SEXP ySEXP, SEXP min_shapeSEXP, SEXP max_shapeSEXP, SEXP bySEXP, SEXP max_repetitionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -108,7 +121,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type max_shape(max_shapeSEXP);
     Rcpp::traits::input_parameter< double >::type by(bySEXP);
     Rcpp::traits::input_parameter< int >::type max_repetitions(max_repetitionsSEXP);
-    __result = Rcpp::wrap(FitIsoScaleGPD(y, min_shape, max_shape, by, max_repetitions));
+    __result = Rcpp::wrap(FitIsoScaleGPD2(y, min_shape, max_shape, by, max_repetitions));
     return __result;
 END_RCPP
 }
@@ -160,6 +173,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
     __result = Rcpp::wrap(convexMinorant(x, y));
+    return __result;
+END_RCPP
+}
+// GreatestConvexMinorant
+List GreatestConvexMinorant(NumericVector x, NumericVector y);
+RcppExport SEXP gpdIcm_GreatestConvexMinorant(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    __result = Rcpp::wrap(GreatestConvexMinorant(x, y));
     return __result;
 END_RCPP
 }
