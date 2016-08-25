@@ -61,17 +61,6 @@ NumericVector MakeScaleAdmissible(NumericVector scale, NumericVector y, double s
   return z;
 }
 
-//// [[Rcpp::export]]
-NumericVector compute_next_icm_gpd(NumericVector y, NumericVector scale, double shape) {
-  int ny = y.length();
-  NumericVector xx(ny, 1.0); 
-  NumericVector yy(ny);
-  for (int i = 0; i < ny; i++) {
-    yy[i] = scale[i] - compute_pd1_scale_nll_gpd(y[i], scale[i], shape);
-  }
-  return compute_convex_minorant_of_cumsum(xx, yy);
-}
-
 //[[Rcpp::export]]
 double compute_scalar_product (NumericVector a, NumericVector b) {
   int n = a.length();
