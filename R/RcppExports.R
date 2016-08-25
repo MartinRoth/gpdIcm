@@ -6,47 +6,38 @@
 #'
 #' @inheritParams compute_nll_gpd
 #' @return isotonic scale parameter that does not violate the GPD constraint
-make_gpd_admissible <- function(scale, y, shape) {
-    .Call('gpdIcm_make_gpd_admissible', PACKAGE = 'gpdIcm', scale, y, shape)
-}
-
-#' Isotonic estimation (using an adapted version of the ICM algorithm)
-#'
-#' @return isotonic scale parameter estimate and deviance
-#' @inheritParams compute_nll_gpd
-#' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
-#' @param max_repetitions Maximal number of repetitions
 #' @useDynLib gpdIcm
 #' @importFrom Rcpp evalCpp
-#' @export
-gpd_scale_isotonic_fit <- function(y, start, shape, max_repetitions = 1e+5L) {
-    .Call('gpdIcm_gpd_scale_isotonic_fit', PACKAGE = 'gpdIcm', y, start, shape, max_repetitions)
+MakeScaleAdmissible <- function(scale, y, shape) {
+    .Call('gpdIcm_MakeScaleAdmissible', PACKAGE = 'gpdIcm', scale, y, shape)
 }
 
-#' Isotonic estimation (using a projected grdient method)
+compute_scalar_product <- function(a, b) {
+    .Call('gpdIcm_compute_scalar_product', PACKAGE = 'gpdIcm', a, b)
+}
+
+ComputeGradient <- function(y, scale, shape) {
+    .Call('gpdIcm_ComputeGradient', PACKAGE = 'gpdIcm', y, scale, shape)
+}
+
+ComputeHessianDiagonal <- function(y, scale, shape) {
+    .Call('gpdIcm_ComputeHessianDiagonal', PACKAGE = 'gpdIcm', y, scale, shape)
+}
+
+#' Isotonic estimation (using a projected gradient method)
 #'
 #' @note up to now only for positive shape parameters
 #'
 #' @inheritParams compute_nll_gpd
-#' @inheritParams gpd_scale_isotonic_fit
+#' @inheritParams FitIsoScaleFixedICM
 #' @return isotonic scale parameter estimate and deviance
 #' @export
-gpd_isotonic_scale_projected_gradient <- function(y, scale, shape, max_repetitions = 1e+5L) {
-    .Call('gpdIcm_gpd_isotonic_scale_projected_gradient', PACKAGE = 'gpdIcm', y, scale, shape, max_repetitions)
+FitIsoScaleFixedPG <- function(y, scale, shape, max_repetitions = 1e+5L) {
+    .Call('gpdIcm_FitIsoScaleFixedPG', PACKAGE = 'gpdIcm', y, scale, shape, max_repetitions)
 }
 
-#' Estimation of GPD parameters with fixed shape parameter and non-decreasing
-#' scale parameter 
-#'
-#' @inheritParams compute_nll_gpd
-#' @inheritParams gpd_scale_isotonic_fit
-#' @param min_shape double minimum shape value
-#' @param max_shape double maximum shape value
-#' @param by double step size for the profile likelihood 
-#' @return isotonic scale parameter estimate and deviance
-#' @export
-isotonic_scale_gpd_estimator <- function(y, min_shape, max_shape, by = 0.01, max_repetitions = 1e+5L) {
-    .Call('gpdIcm_isotonic_scale_gpd_estimator', PACKAGE = 'gpdIcm', y, min_shape, max_shape, by, max_repetitions)
+generate_shape_grid <- function(from_, to_, by_ = 0.01) {
+    .Call('gpdIcm_generate_shape_grid', PACKAGE = 'gpdIcm', from_, to_, by_)
 }
 
 #' Computes the negative log likelihood for the GPD
@@ -57,6 +48,7 @@ isotonic_scale_gpd_estimator <- function(y, min_shape, max_shape, by = 0.01, max
 #' @param y numeric vector of the data
 #' @param scale numeric vector of the scape parameters
 #' @param shape double 
+#' @export
 compute_nll_gpd <- function(y, scale, shape) {
     .Call('gpdIcm_compute_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
 }
@@ -69,5 +61,27 @@ compute_nll_gpd <- function(y, scale, shape) {
 #' @inheritParams compute_nll_gpd
 compute_pd1_scale_nll_gpd <- function(y, scale, shape) {
     .Call('gpdIcm_compute_pd1_scale_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
+}
+
+#' Computes the second partial derivative (scale) of the negative
+#' log likelihood for the GPD
+#' @inheritParams compute_nll_gpd
+compute_pd2_scale_nll_gpd <- function(y, scale, shape) {
+    .Call('gpdIcm_compute_pd2_scale_nll_gpd', PACKAGE = 'gpdIcm', y, scale, shape)
+}
+
+#' Computes the convex minorant of a polygon.
+#' @param x,y the coordinates of the polygon
+#' @return vector of the y-coordinates of the convex minorant
+convexMinorant <- function(x, y) {
+    .Call('gpdIcm_convexMinorant', PACKAGE = 'gpdIcm', x, y)
+}
+
+#' Computes the convex minorant of a vector.
+#' @param x,y Vector of x and y values
+#' @return x.knots, y.knots, y.slopes and the left derivative at all x values
+#' @export
+GreatestConvexMinorant <- function(x, y) {
+    .Call('gpdIcm_GreatestConvexMinorant', PACKAGE = 'gpdIcm', x, y)
 }
 
