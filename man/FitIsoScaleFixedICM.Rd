@@ -16,7 +16,8 @@ FitIsoScaleFixedICM(y, start, shape, max_repetitions = 1e+05)
 \item{max_repetitions}{Maximal number of repetitions}
 }
 \value{
-isotonic scale parameter estimate and deviance
+isotonic scale parameter estimate, deviance, convergence, iterations
+and deviance trace
 }
 \description{
 Isotonic estimation (using an adapted version of the ICM algorithm)

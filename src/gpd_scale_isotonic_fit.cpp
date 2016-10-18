@@ -153,19 +153,22 @@ NumericVector gpd_projected_gradient_next_step (NumericVector y, NumericVector s
 //'
 //' @inheritParams compute_nll_gpd
 //' @inheritParams FitIsoScaleFixedICM
-//' @return isotonic scale parameter estimate and deviance
+//' @return isotonic scale parameter estimate, deviance, convergence, iterations
+//' and deviance trace
 //' @export
 //[[Rcpp::export]]
 List FitIsoScaleFixedPG (NumericVector y, NumericVector scale, double shape, int max_repetitions = 1e+5) {
   scale = MakeScaleAdmissible(scale, y, shape);
   
   NumericVector scale_new = scale;
+  NumericVector trace(max_repetitions);
   double        value     = compute_nll_gpd(y, scale, shape);
   double        new_value = compute_nll_gpd(y, scale, shape);
   int i = 0;
   do {
     value     = new_value;
     i        += 1;
+    trace[i]  = 2*value;
     scale     = scale_new;
     scale_new = gpd_projected_gradient_next_step(y, scale, shape);
     new_value = compute_nll_gpd(y, scale_new, shape);
@@ -175,7 +178,8 @@ List FitIsoScaleFixedPG (NumericVector y, NumericVector scale, double shape, int
   return List::create(Named("fitted.values") = scale_new,
                       Named("deviance") = 2 * nll,
                       Named("convergence") = (i < max_repetitions),
-                      Named("iterations") = i);
+                      Named("iterations") = i,
+                      Named("trace") = trace[seq_len(i)]);
 }
 
 struct add_multiple {
