@@ -56,7 +56,7 @@ FitIsoScaleFixedICM <- function (y, start, shape, max_repetitions = 1e+5) {
   
   
   nextIterate <- FitIsoScaleICMStep(y, scale, shape)
-  while ((value - nextIterate$deviance > 1e-6 || max(abs(scale - nextIterate$scale)) > 1e-6) && i < max_repetitions) {
+  while (((value - nextIterate$deviance)/2 > 1e-6 || max(abs(scale - nextIterate$scale)) > 1e-6) && i < max_repetitions) {
     i           <- i + 1
     trace[i]    <- value
     scale       <- nextIterate$scale
