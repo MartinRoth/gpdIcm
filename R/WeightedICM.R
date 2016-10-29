@@ -48,22 +48,26 @@ FitIsoScaleICMStep <- function(y, start, shape) {
 #' @export
 FitIsoScaleFixedICM <- function (y, start, shape, max_repetitions = 1e+5) {
   
+  i     <- 0
   scale <- MakeScaleAdmissible(start, y, shape)
   value <- compute_nll_gpd(y, scale, shape) * 2
+  trace <- numeric(max_repetitions)
+  
   
   nextIterate <- FitIsoScaleICMStep(y, scale, shape)
-  i <- 0;
-  while ((value - nextIterate$deviance > 1e-6 || max(abs(scale - nextIterate$scale)) > 1e-6) && i < max_repetitions) {
-    i = i + 1
-    scale <- nextIterate$scale
-    value <- nextIterate$deviance
+  while (((value - nextIterate$deviance)/2 > 1e-6 || max(abs(scale - nextIterate$scale)) > 1e-6) && i < max_repetitions) {
+    i           <- i + 1
+    trace[i]    <- value
+    scale       <- nextIterate$scale
+    value       <- nextIterate$deviance
     nextIterate <- FitIsoScaleICMStep(y, scale, shape)
   }
   
   list(fitted.values = scale, 
-       deviance = value,
-       convergence = (i < max_repetitions),
-       iterations = i);
+       deviance      = value,
+       convergence   = (i < max_repetitions),
+       iterations    = i,
+       trace         = trace[1:i])
 }
 
 # FitIsoScaleGPD
