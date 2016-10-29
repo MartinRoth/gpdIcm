@@ -26,8 +26,8 @@ FitIsoScaleICMStep <- function(y, start, shape) {
   gradient <- ComputeGradient(y, start, shape)
   hesDiag  <- ComputeHessianDiagonal(y, start, shape)
   
-  hesDiag[hesDiag < 0] <- -hesDiag[hesDiag < 0]
-  
+  hesDiag[hesDiag < 0] <- pmax(-hesDiag[hesDiag < 0], 1e-5)
+
   points     <- cbind(c(0, cumsum(hesDiag)),
                       c(0, cumsum(start * hesDiag - gradient)))
   projection <- GreatestConvexMinorant(points[,1], points[, 2])$left.derivative
@@ -37,14 +37,15 @@ FitIsoScaleICMStep <- function(y, start, shape) {
   
   LineSearchICM(y, start, direction, gradient, shape)
 }
-  
+
 
 
 #' Isotonic estimation (using an adapted version of the ICM algorithm)
-#' @return isotonic scale parameter estimate and deviance
 #' @inheritParams compute_nll_gpd
 #' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
 #' @param max_repetitions Maximal number of repetitions
+#' @return isotonic scale parameter estimate, deviance, convergence, iterations
+#' and deviance trace
 #' @export
 FitIsoScaleFixedICM <- function (y, start, shape, max_repetitions = 1e+5) {
   

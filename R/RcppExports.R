@@ -30,7 +30,8 @@ ComputeHessianDiagonal <- function(y, scale, shape) {
 #'
 #' @inheritParams compute_nll_gpd
 #' @inheritParams FitIsoScaleFixedICM
-#' @return isotonic scale parameter estimate and deviance
+#' @return isotonic scale parameter estimate, deviance, convergence, iterations
+#' and deviance trace
 #' @export
 FitIsoScaleFixedPG <- function(y, scale, shape, max_repetitions = 1e+5L) {
     .Call('gpdIcm_FitIsoScaleFixedPG', PACKAGE = 'gpdIcm', y, scale, shape, max_repetitions)
