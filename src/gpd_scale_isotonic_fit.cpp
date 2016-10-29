@@ -162,6 +162,8 @@ List FitIsoScaleFixedPG (NumericVector y, NumericVector scale, double shape, int
   NumericVector scale_new = scale;
   double        value     = compute_nll_gpd(y, scale, shape);
   double        new_value = compute_nll_gpd(y, scale, shape);
+  vector<double> trace;
+  trace.push_back(new_value);
   int i = 0;
   do {
     value     = new_value;
@@ -169,13 +171,15 @@ List FitIsoScaleFixedPG (NumericVector y, NumericVector scale, double shape, int
     scale     = scale_new;
     scale_new = gpd_projected_gradient_next_step(y, scale, shape);
     new_value = compute_nll_gpd(y, scale_new, shape);
+    trace.push_back(new_value);
   } while ((value - new_value > 1e-6 || max(abs(scale - scale_new)) > 1e-6) && i < max_repetitions);
   
   double nll = compute_nll_gpd(y, scale_new, shape);
   return List::create(Named("fitted.values") = scale_new,
                       Named("deviance") = 2 * nll,
                       Named("convergence") = (i < max_repetitions),
-                      Named("iterations") = i);
+                      Named("iterations") = i,
+                      Named("trace") = Rcpp::wrap(trace));
 }
 
 struct add_multiple {
