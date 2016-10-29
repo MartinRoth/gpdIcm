@@ -99,3 +99,9 @@ test_that("Convergence fails", {
  expect_true(tmp1$convergence)
  #expect_false(tmp2$convergence)
 })
+
+context("Unload")
+test_that("Unload", {
+  expect_null(detach("package:gpdIcm", unload=TRUE))
+  library(gpdIcm)
+})
