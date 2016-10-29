@@ -1,4 +1,5 @@
 context("GreatestConvexMinorant")
+library(gpdIcm)
 
 ## TODO: Rename context
 ## TODO: Add more tests
