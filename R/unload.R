@@ -1,3 +1,3 @@
 .onUnload <- function (libpath) {
-  library.dynam.unload("mypackage", libpath)
+  library.dynam.unload("gpdIcm", libpath)
 }
