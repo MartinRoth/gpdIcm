@@ -16,7 +16,8 @@ FitIsoScaleFixedPG(y, scale, shape, max_repetitions = 100000L)
 \item{max_repetitions}{Maximal number of repetitions}
 }
 \value{
-isotonic scale parameter estimate and deviance
+isotonic scale parameter estimate, deviance, convergence, iterations
+and deviance trace
 }
 \description{
 Isotonic estimation (using a projected gradient method)

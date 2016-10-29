@@ -1,3 +1,7 @@
+# gpdIcm 0.0.1.4
+
+Added deviance trace
+
 # gpdIcm 0.0.1.3
 
 Attention: Introduces a new name scheme.
