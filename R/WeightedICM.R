@@ -26,6 +26,7 @@ FitIsoScaleICMStep <- function(y, start, shape) {
   gradient <- ComputeGradient(y, start, shape)
   hesDiag  <- ComputeHessianDiagonal(y, start, shape)
   
+  nNegWeights <- length(hesDiag[hesDiag < -1e-05])
   hesDiag[hesDiag < 0] <- pmax(-hesDiag[hesDiag < 0], 1e-5)
 
   points     <- cbind(c(0, cumsum(hesDiag)),
@@ -35,9 +36,26 @@ FitIsoScaleICMStep <- function(y, start, shape) {
   direction <- projection - start
   
   
-  LineSearchICM(y, start, direction, gradient, shape)
+  c(nNegWeights = nNegWeights, 
+    LineSearchICM(y, start, direction, gradient, shape))
 }
 
+FitIsoScaleICMStep2 <- function(y, start, shape) {
+  gradient <- ComputeGradient(y, start, shape)
+  hesDiag  <- ComputeHessianDiagonal(y, start, shape)
+  
+  nNegWeights <- length(hesDiag[hesDiag < 0])
+  hesDiag[hesDiag < 0] <- 0 #1e-5
+
+  points     <- cbind(c(0, cumsum(hesDiag)),
+                      c(0, cumsum(start * hesDiag - gradient)))
+  projection <- GreatestConvexMinorant(points[,1], points[, 2])$left.derivative
+  
+  direction <- projection - start
+  
+  c(nNegWeights = nNegWeights, 
+    LineSearchICM(y, start, direction, gradient, shape))
+}
 
 
 #' Isotonic estimation (using an adapted version of the ICM algorithm)
@@ -53,12 +71,14 @@ FitIsoScaleFixedICM <- function (y, start, shape, max_repetitions = 1e+5) {
   scale <- MakeScaleAdmissible(start, y, shape)
   value <- compute_nll_gpd(y, scale, shape) * 2
   trace <- numeric(max_repetitions)
+  nNegWeights <- numeric(max_repetitions)
   
   
   nextIterate <- FitIsoScaleICMStep(y, scale, shape)
   while (((value - nextIterate$deviance)/2 > 1e-6 || max(abs(scale - nextIterate$scale)) > 1e-6) && i < max_repetitions) {
     i           <- i + 1
     trace[i]    <- value
+    nNegWeights[i] <- nextIterate$nNegWeights
     scale       <- nextIterate$scale
     value       <- nextIterate$deviance
     nextIterate <- FitIsoScaleICMStep(y, scale, shape)
@@ -68,6 +88,41 @@ FitIsoScaleFixedICM <- function (y, start, shape, max_repetitions = 1e+5) {
        deviance      = value,
        convergence   = (i < max_repetitions),
        iterations    = i,
+       nNegWeights   = nNegWeights[1 : i],
+       trace         = trace[1:i])
+}
+
+#' Isotonic estimation (using an adapted version of the ICM algorithm)
+#' @inheritParams compute_nll_gpd
+#' @param start Numeric vector of the initial scale parameters (will be forced to be admissible)
+#' @param max_repetitions Maximal number of repetitions
+#' @return isotonic scale parameter estimate, deviance, convergence, iterations
+#' and deviance trace
+#' @export
+FitIsoScaleFixedICM2 <- function (y, start, shape, max_repetitions = 1e+5) {
+  
+  i     <- 0
+  scale <- MakeScaleAdmissible(start, y, shape)
+  value <- compute_nll_gpd(y, scale, shape) * 2
+  trace <- numeric(max_repetitions)
+  nNegWeights <- numeric(max_repetitions)
+  
+  
+  nextIterate <- FitIsoScaleICMStep2(y, scale, shape)
+  while (((value - nextIterate$deviance)/2 > 1e-6 || max(abs(scale - nextIterate$scale)) > 1e-6) && i < max_repetitions) {
+    i           <- i + 1
+    trace[i]    <- value
+    nNegWeights[i] <- nextIterate$nNegWeights
+    scale       <- nextIterate$scale
+    value       <- nextIterate$deviance
+    nextIterate <- FitIsoScaleICMStep2(y, scale, shape)
+  }
+  
+  list(fitted.values = scale, 
+       deviance      = value,
+       convergence   = (i < max_repetitions),
+       iterations    = i,
+       nNegWeights   = nNegWeights[1 : i],
        trace         = trace[1:i])
 }
 
